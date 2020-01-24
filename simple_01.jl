@@ -13,8 +13,8 @@ using Printf
 # origin = readasc("input/origin.asc"; nd="NODATA")
 # output = readasc("output/connectivity.asc")
 
-input = CSV.read("resistance.csv")
-output = CSV.read("connectivity.csv", delim="\t")
+input = CSV.read("data/resistance.csv")
+output = CSV.read("data/connectivity.csv", delim="\t")
 input = convert(Matrix, input)
 output = convert(Matrix, output)
 
