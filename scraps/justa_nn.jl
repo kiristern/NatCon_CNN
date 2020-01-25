@@ -115,24 +115,19 @@ end
 findall(x->x==1.0, x) #search for x and y value  that's not zero (ie. 1.0) to test loss function
 loss(x[726], y[726])
 
-# #to improve prediction, take gradients of W and b wrt loss and perform gradient descent
-# gs = gradient(() -> loss(x_train,y_train), params([W,b]))
-# #pull out gradients to update W to train the model
-# W̄ = gs[W]
-# W .-= 0.1 .* W̄
-# loss(x[726], y[726])
-
-#evaluate callback (ie. to observe the training process)
-# evalcb() = @show(loss(x_test, y_test))
-
-accuracy(x, y) = mean(Flux.onecold(model(x)) .== Flux.onecold(y))
-evalcb = Flux.throttle(() -> @show(accuracy(x_test, y_test)), 10)
-
+#to improve prediction, take gradients of W and b wrt loss and perform gradient descent
+gs = gradient(() -> loss(x_train,y_train), params([W,b]))
+#pull out gradients to update W to train the model
+W̄ = gs[W]
+W .-= 0.1 .* W̄
+loss(x[726], y[726])
 
 opt = ADAM(0.001) #learn rate (η = 0.01)
 
+#evaluate callback (ie. to observe the training process)
+evalcb() = @show(loss(x_test, y_test))
+
 @info("Beginning training loop...")
-Flux.train!(loss, params(model), train_data, opt, cb = (evalcb)) #accuracy
 Flux.train!(loss, params(model), train_data, opt, cb = Flux.throttle(evalcb, 5)) #loss
 #train for 2 epochs (ie. how many times train! loops over data)
 # @Flux.epochs 2 Flux.train!(loss, params(model), train_data, opt, cb = (evalcb))
