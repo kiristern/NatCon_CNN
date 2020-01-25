@@ -1,3 +1,3 @@
-flux_doc/
-housetest/
-housing.data/
+flux_doc.jl
+housetest.jl
+housing.data
