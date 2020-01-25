@@ -90,9 +90,9 @@ y_test = y[:,split_index+1:size(x,2)]
 # x_test = x[:,split_index+1:size(x,2)]
 # y_test = y[:,split_index+1:size(x,2)]
 
-# test_data = [(x_train, y_train)]
+# train_data = [(x_train, y_train)]
 # train_data = Iterators.repeated((x_train, y_train), 3)#train model on the same data three times
-test_data = zip(x_train, y_train)
+train_data = zip(x_train, y_train)
 test_data = zip(x_test, y_test)
 
 
@@ -108,8 +108,6 @@ function loss(x, y)
   ŷ = predict(x)
   sum((y .- ŷ).^2)
 end
-
-model =
 
 
 
@@ -132,8 +130,12 @@ opt = ADAM(0.001) #learn rate (η = 0.01)
 #evaluate callback
 evalcb() = @show(loss(x_test, y_test))
 
-@Flux.epochs 3 Flux.train!(loss, params(model), train_data, opt)
-
+#train for 2 epochs (ie. how many times train! loops over data)
+@Flux.epochs 2 Flux.train!(loss, params(model), train_data, opt, cb = Flux.throttle(evalcb, 5))
+#MSR/loss
+meansquarederror(ŷ, y) = sum((ŷ .- y).^2)/size(y, 2)
+err = meansquarederror(predict(x_test),y_test)
+println(err)
 
 
 
@@ -189,8 +191,3 @@ for i = 1:100
   end
   @show loss(x_train, y_train)
 end
-
-#MSR/loss
-meansquarederror(ŷ, y) = sum((ŷ .- y).^2)/size(y, 2)
-err = meansquarederror(predict(x_test),y_test)
-println(err)
