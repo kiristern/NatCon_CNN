@@ -7,9 +7,9 @@ using Random
 
 include("lib.jl")
 
-input = readasc("input/resistance.asc"; nd="NODATA")
-origin = readasc("input/origin.asc"; nd="NODATA")
-output = readasc("output/connectivity.asc")
+input = readasc("data/input/resistance.asc"; nd="NODATA")
+origin = readasc("data/input/origin.asc"; nd="NODATA")
+output = readasc("data/output/connectivity.asc")
 
 # using DelimitedFiles
 
@@ -70,7 +70,7 @@ evalcb() = @show(loss(X[1], O[1]))
 
 d = [(X[i], O[i]) for i in 1:length(O)]
 @progress "Minibatching" for i in 1:200
-    k = sample(d, 100, replace=false)
+    k = sample(d, 100, replace=false) #randomly select 100 values from d, without replacement
     Flux.train!(loss, params(model), k, ADAM(0.001), cb = Flux.throttle(evalcb, 5))
 end
 
