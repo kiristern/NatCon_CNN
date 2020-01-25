@@ -1,6 +1,7 @@
 using Flux
 using StatsBase
 using CSV
+using Printf
 
 #################################
 
@@ -89,9 +90,11 @@ y_test = y[:,split_index+1:size(x,2)]
 # x_test = x[:,split_index+1:size(x,2)]
 # y_test = y[:,split_index+1:size(x,2)]
 
-test_data = zip(x_train, y_train)
 # test_data = [(x_train, y_train)]
-# test_data = Iterators.repeated((x_train, y_train), 3) #train model on the same data three times
+# train_data = Iterators.repeated((x_train, y_train), 3)#train model on the same data three times
+test_data = zip(x_train, y_train)
+test_data = zip(x_test, y_test)
+
 
 #create model
 #params() to keep track of these values
@@ -99,12 +102,19 @@ W = param(randn(1,2)/10) #assign random weight
 b = param([0.]) #add bias... 0 bias?
 
 #simple linear regression to predict an output array y from input x
-predict(x) = W*x .+ b
+model = predict(x) = W*x .+ b
 
 function loss(x, y)
   ŷ = predict(x)
   sum((y .- ŷ).^2)
 end
+
+model =
+
+
+
+accuracy(x, y) = mean(Flux.onecold(model(x)) .== Flux.onecold(y))
+
 
 #verify loss function
 findall(x->x==1.0, x) #search for x and y value  that's not zero (ie. 1.0) to test loss function
@@ -122,7 +132,52 @@ opt = ADAM(0.001) #learn rate (η = 0.01)
 #evaluate callback
 evalcb() = @show(loss(x_test, y_test))
 
-@Flux.epochs 3 Flux.train!(loss, params(m), data_test, opt)
+@Flux.epochs 3 Flux.train!(loss, params(model), train_data, opt)
+
+
+
+
+@info("Beginning training loop...")
+best_acc = 0.0
+last_improvement = 0
+for epoch_idx in 1:100
+    global best_acc, last_improvement
+    # Train for a single epoch
+    Flux.train!(loss, params(model), train_data, opt)
+
+    # Calculate accuracy:
+    acc = accuracy(test_data...)
+    @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
+
+    # If our accuracy is good enough, quit out.
+    if acc >= 0.999
+        @info(" -> Early-exiting: We reached our target accuracy of 99.9%")
+        break
+    end
+
+    # If this is the best accuracy we've seen so far, save the model out
+    if acc >= best_acc
+        @info(" -> New best accuracy!")
+    end
+
+    # If we haven't seen improvement in 5 epochs, drop our learning rate:
+    if epoch_idx - last_improvement >= 5 && opt.eta > 1e-6
+        opt.eta /= 10.0
+        @warn(" -> Haven't improved in a while, dropping learning rate to $(opt.eta)!")
+
+        # After dropping learning rate, give it a few epochs to improve
+        last_improvement = epoch_idx
+    end
+
+    if epoch_idx - last_improvement >= 10
+        @warn(" -> We're calling this converged.")
+        break
+    end
+end
+
+
+
+
 
 
 η = 0.001
