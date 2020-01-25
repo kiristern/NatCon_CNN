@@ -3,6 +3,8 @@ using StatsBase
 using CSV
 using Printf
 
+cd(@__DIR__)
+
 #################################
 
 function update!(x::AbstractArray, x̄)
@@ -24,9 +26,9 @@ end
 ##############################
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
-a = CSV.read("data/resistance.csv")
-b = CSV.read("data/origin.csv")
-c = CSV.read("data/connectivity.csv", delim="\t")
+a = CSV.read("../data/resistance.csv")
+b = CSV.read("../data/origin.csv")
+c = CSV.read("../data/connectivity.csv", delim="\t")
 a = convert(Matrix, a)
 b = convert(Matrix, b)
 c = convert(Matrix, c)
@@ -127,7 +129,7 @@ loss(x[726], y[726])
 
 opt = ADAM(0.001) #learn rate (η = 0.01)
 
-#evaluate callback
+#evaluate callback (ie. to observe the training process)
 evalcb() = @show(loss(x_test, y_test))
 
 #train for 2 epochs (ie. how many times train! loops over data)
