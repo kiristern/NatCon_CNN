@@ -5,25 +5,6 @@ using Printf
 
 cd(@__DIR__)
 
-#################################
-
-function update!(x::AbstractArray, x̄)
-  x .+= x̄
-  return x
-end
-
-# function update!(opt, x, x̄)
-#   x .-= apply!(opt, x, x̄)
-# end
-#
-# function update!(opt, xs::Flux.Params, gs)
-#   for x in xs
-#     gs[x] == nothing && continue
-#     update!(opt, x, gs[x])
-#   end
-# end
-
-##############################
 @time begin
   #Read in the CSV (comma separated values) file and convert them to arrays.
   a = CSV.read("../data/resistance.csv")
@@ -65,15 +46,8 @@ end
   df = [R O C]
 
   #Split our dataset into the input features (which we call x) and the label (which we call y).
-  #need o take transpose for it to work!!
   x = df[:, 1:2]'
   y = df[:, 3:3]'
-  # x = df[:, 1:2]'
-  # y = df[:, 3:3]'
-  #y = df[:,3] returns a vector
-  #y = y[:,:] #turn vector into arrray
-
-  #data is already between 0-1. no need to normalize/scale
 
   #Split our dataset into the training set, the validation set and the test set.
   split_ratio = 0.1 # For the train test split
@@ -85,12 +59,6 @@ end
   x_test = x[:,split_index+1:size(x,2)]
   y_test = y[:,split_index+1:size(x,2)]
 
-  #without the transpose
-  # split_index = floor(Int,size(x,2)*split_ratio)
-  # x_train = x[:,1:split_index]
-  # y_train = y[:,1:split_index]
-  # x_test = x[:,split_index+1:size(x,2)]
-  # y_test = y[:,split_index+1:size(x,2)]
 
   # train_data = [(x_train, y_train)]
   # train_data = Iterators.repeated((x_train, y_train), 3)#train model on the same data three times
@@ -128,17 +96,21 @@ opt = ADAM(0.001) #learn rate (η = 0.01)
 evalcb() = @show(loss(x_test, y_test))
 
 @info("Beginning training loop...")
-Flux.train!(loss, params(model), train_data, opt, cb = Flux.throttle(evalcb, 5)) #loss
-#train for 2 epochs (ie. how many times train! loops over data)
-# @Flux.epochs 2 Flux.train!(loss, params(model), train_data, opt, cb = (evalcb))
+Flux.train!(loss, params(model), train_data, opt, cb = Flux.throttle(evalcb, 5))
 
-#MSR/loss
+#train for 2 epochs (ie. how many times train! loops over data)
+@Flux.epochs 2 Flux.train!(loss, params(model), train_data, opt, cb = Flux.throttle(evalcb, 5))
+
+#MSE/loss
 meansquarederror(ŷ, y) = sum((ŷ .- y).^2)/size(y, 2)
 err = meansquarederror(predict(x_test),y_test)
 println(err)
 
 
-
+function update!(x::AbstractArray, x̄)
+  x .+= x̄
+  return x
+end
 
 η = 0.001
 
