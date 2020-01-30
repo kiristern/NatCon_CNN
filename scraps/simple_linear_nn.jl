@@ -46,6 +46,7 @@ cd(@__DIR__)
   df = [R O C]
 
   #Split our dataset into the input features (which we call x) and the label (which we call y).
+  #need to take transpose or it doesn't work...??
   x = df[:, 1:2]'
   y = df[:, 3:3]'
 
@@ -59,9 +60,8 @@ cd(@__DIR__)
   x_test = x[:,split_index+1:size(x,2)]
   y_test = y[:,split_index+1:size(x,2)]
 
-
   # train_data = [(x_train, y_train)]
-  # train_data = Iterators.repeated((x_train, y_train), 3)#train model on the same data three times
+  # train_data = Iterators.repeated((x_train, y_train), 3) #train model on the same data 3 times
   train_data = zip(x_train, y_train)
   test_data = zip(x_test, y_test)
 end
