@@ -7,7 +7,7 @@ using Random
 
 include("lib.jl")
 
-input = readasc("data/input/resistance.asc"; nd="NODATA")
+input_r = readasc("data/input/resistance.asc"; nd="NODATA")
 origin = readasc("data/input/origin.asc"; nd="NODATA")
 output = readasc("data/output/connectivity.asc")
 
@@ -19,16 +19,16 @@ output = readasc("data/output/connectivity.asc")
 
 #Take 20 000 unique and random cartesian indices (constructing a CartesianIndices from an array makes a range of its indices--ie. points) from the output
 Y = unique(rand(CartesianIndices(output), 20_000))
-filter!(y -> !isnan(input[y]), Y) #if input is NaN, remove
-filter!(y -> 23 <= Tuple(y)[1] <= (size(input, 1)-24) , Y) #filter first element of the tuple between: 23 and size of input-24
-filter!(y -> 23 <= Tuple(y)[2] <= (size(input, 2)-24) , Y) #filter second element of the tuple between: 23 and size of input-24
+filter!(y -> !isnan(input_r[y]), Y) #if input is NaN, remove
+filter!(y -> 23 <= Tuple(y)[1] <= (size(input_r, 1)-24) , Y) #filter first element of the tuple between: 23 and size of input-24
+filter!(y -> 23 <= Tuple(y)[2] <= (size(input_r, 2)-24) , Y) #filter second element of the tuple between: 23 and size of input-24
 
 #Create 28x28x1x1 layers
 #create a range around (a,b) points of input at position Y
 X = Array{Float64,4}[]
 for y in Y
     a, b = Tuple(y) #tuple will not change
-    m = reshape(input[a-14:a+13,b-14:b+13], (28, 28, 1, 1)) #m is a Y-element 28x28x1x1 (width x height x chanel (ex: greyscale=1, RGB=3) x number/batch) array, where tuples (a,b) of input at position Y, range between a/b-14:a/b+13
+    m = reshape(input_r[a-14:a+13,b-14:b+13], (28, 28, 1, 1)) #m is a Y-element 28x28x1x1 (width x height x chanel (ex: greyscale=1, RGB=3) x number/batch) array, where tuples (a,b) of input at position Y, range between a/b-14:a/b+13
     push!(X, m)
 end
 X
@@ -90,8 +90,8 @@ iter = 1
     i, j = Tuple(p)
     ri = (i-14):(i+13)
     rj = (j-14):(j+13)
-    if !any(isnan.(input[ri,rj]))
-        pred[p] = model(reshape(input[ri,rj], (28, 28, 1, 1))).data[1]
+    if !any(isnan.(input_r[ri,rj]))
+        pred[p] = model(reshape(input_r[ri,rj], (28, 28, 1, 1))).data[1]
     end
     iter += 1
     if mod(iter, 100) == 0
