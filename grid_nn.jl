@@ -33,22 +33,23 @@ cd(@__DIR__)
 end
 
 stride = 10
+window = 9
 
 Random.seed!(1234)
 
 #select 9 coordinates where there is data
-Y = sample(findall(r .> 0), 9)
-Y = Tuple.(Y)
-first.(Y)
-last.(Y)
+Q = sample(findall(r .> 0), window)
+Q = Tuple.(Q)
+first.(Q)
+last.(Q)
 
 W = []
 Z = []
-for h in 1:length(Y), k in 1:length(Y)
-  xr = vec(r[first.(Y)[h]:(first.(Y)[h]+stride-1),last.(Y)[k]:(last.(Y)[k]+stride-1)]) #resistance
-  xo = vec(o[first.(Y)[h]:(first.(Y)[h]+stride-1),last.(Y)[k]:(last.(Y)[k]+stride-1)]) #origin
+for h in 1:length(Q), k in 1:length(Q)
+  xr = vec(r[first.(Q)[h]:(first.(Q)[h]+stride-1),last.(Q)[k]:(last.(Q)[k]+stride-1)]) #resistance
+  xo = vec(o[first.(Q)[h]:(first.(Q)[h]+stride-1),last.(Q)[k]:(last.(Q)[k]+stride-1)]) #origin
   x_test = vcat(xr,xo)
-  y_test = c[first.(Y)[h]:(first.(Y)[h]+stride-1),last.(Y)[k]:(last.(Y)[k]+stride-1)] #connectivity - what we want to predict
+  y_test = c[first.(Q)[h]:(first.(Q)[h]+stride-1),last.(Q)[k]:(last.(Q)[k]+stride-1)] #connectivity - what we want to predict
   push!(W, x_test)
   push!(Z, y_test)
 end
