@@ -40,16 +40,15 @@ Random.seed!(1234)
 #select 9 coordinates where there is data
 Q = sample(findall(r .> 0), window)
 Q = Tuple.(Q)
-first.(Q)
-last.(Q)
+
 
 W = []
 Z = []
-for h in 1:length(Q), k in 1:length(Q)
-  xr = vec(r[first.(Q)[h]:(first.(Q)[h]+stride-1),last.(Q)[k]:(last.(Q)[k]+stride-1)]) #resistance
-  xo = vec(o[first.(Q)[h]:(first.(Q)[h]+stride-1),last.(Q)[k]:(last.(Q)[k]+stride-1)]) #origin
-  x_test = vcat(xr,xo)
-  y_test = c[first.(Q)[h]:(first.(Q)[h]+stride-1),last.(Q)[k]:(last.(Q)[k]+stride-1)] #connectivity - what we want to predict
+for q in Q
+  xr = vec(r[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
+  xo = vec(o[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
+  x_test = vcat(xr, xo)
+  y_test = c[first(q):(first(q)+stride-1),last(q):(last(q)+stride-1)]
   push!(W, x_test)
   push!(Z, y_test)
 end
@@ -94,8 +93,8 @@ evalcb() = @show(loss(x_test, y_test))
 @info("Beginning training loop...")
 Random.seed!(1234)
 @time @elapsed for epoch in 1:500
-  idx = sample(1:length(X), 500, replace=false)
-  train_data = zip(X[idx], Y[idx])
+  index = sample(1:length(X), 500, replace=false)
+  train_data = zip(X[index], Y[index])
   Flux.train!(loss, params(model), train_data, ADAM(0.001), cb = Flux.throttle(evalcb, 1))
 end
 
@@ -104,5 +103,5 @@ end
 @info "plotting"
 p1 = heatmap(Z, title="predicted")
 p2 = heatmap(model(W), title="observed")
-p3 = scatter(y_test, model(W), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
+p3 = scatter(Z, model(W), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
