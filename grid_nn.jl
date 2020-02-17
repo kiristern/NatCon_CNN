@@ -1,8 +1,8 @@
 using StatsBase
 using Flux
-using StatsBase
 using CSV
 using Plots
+using Random
 
 cd(@__DIR__)
 
@@ -34,37 +34,51 @@ end
 
 stride = 10
 
-#extract and vectorize values for 10x10 resistance, origin and connectivity layers
-xr = vec(r[200:209,200:209]) #resistance
-xo = vec(o[200:209,200:209]) #origin
-x_test = vcat(xr,xo)
-y_test = c[200:209,200:209] #connectivity - what we want to predict
+Random.seed!(1234)
 
+#select 9 coordinates where there is data
+Y = sample(findall(r .> 0), 9)
+Y = Tuple.(Y)
+first.(Y)
+last.(Y)
+
+W = []
+Z = []
+for h in 1:length(Y), k in 1:length(Y)
+  xr = vec(r[first.(Y)[h]:(first.(Y)[h]+stride-1),last.(Y)[k]:(last.(Y)[k]+stride-1)]) #resistance
+  xo = vec(o[first.(Y)[h]:(first.(Y)[h]+stride-1),last.(Y)[k]:(last.(Y)[k]+stride-1)]) #origin
+  x_test = vcat(xr,xo)
+  y_test = c[first.(Y)[h]:(first.(Y)[h]+stride-1),last.(Y)[k]:(last.(Y)[k]+stride-1)] #connectivity - what we want to predict
+  push!(W, x_test)
+  push!(Z, y_test)
+end
+W
+Z
+
+Random.seed!(1234)
 X = []
 Y = []
-
-#for i & j in 150 random Int between 10:950
+#taking 150 random 10x10 matrices of r, o and c layers
 for i in rand(10:950, 150), j in rand(10:950, 150)
-    #taking groups of matrices of dimensions
-    xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
-    xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
-    x = vcat(xr, xo) #stack the matrices together
-    y = c[i:(i+stride-1),j:(j+stride-1)] #matrix we want to predict
-    if minimum(y) > 0 #predict only when there is connectivity
-        push!(X, x)
-        push!(Y, y)
-    end
+  #taking groups of matrices of dimensions stridexstride
+  xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
+  xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
+  x = vcat(xr, xo) #stack the matrices together
+  y = c[i:(i+stride-1),j:(j+stride-1)] #matrix we want to predict
+  if minimum(y) > 0 #predict only when there is connectivity
+    push!(X, x)
+    push!(Y, y)
+  end
 end
-X #Vector of 16622 200-element vectors
-Y #Vector of 16622 10x10 Array
-
+X
+Y
 
 train_data = zip(X, Y)
 
 model = Chain(
-    Dense(convert(Int,stride*stride)*2,150, relu),
-    Dense(150,convert(Int,stride*stride)),
-    (f) -> reshape(f, (stride,stride))
+  Dense(convert(Int,stride*stride)*2,100, σ),
+  Dense(100, convert(Int,stride*stride), σ),
+  (f) -> reshape(f, (stride,stride))
 )
 
 function loss(x, y)
@@ -75,15 +89,19 @@ end
 evalcb() = @show(loss(x_test, y_test))
 
 #train
-#for every epoch, sample 500 random maps
-@elapsed for epoch in 1:50
-    idx = sample(1:length(X), 500, replace=false)
-    train_data = zip(X[idx], Y[idx])
-    Flux.train!(loss, params(model), train_data, ADAM(0.001), cb = Flux.throttle(evalcb, 1))
+#for every epoch, sample 500 random maps from the 150 10x10 random matrices/maps
+@info("Beginning training loop...")
+Random.seed!(1234)
+@time @elapsed for epoch in 1:500
+  idx = sample(1:length(X), 500, replace=false)
+  train_data = zip(X[idx], Y[idx])
+  Flux.train!(loss, params(model), train_data, ADAM(0.001), cb = Flux.throttle(evalcb, 1))
 end
 
+
 #have a look
-p1 = heatmap(y_test)
-p2 = heatmap(model(x_test))
-p3 = scatter(y_test, model(x_test), leg=false, c=:black, xlim=(0,1), ylim=(0,1))
+@info "plotting"
+p1 = heatmap(Z, title="predicted")
+p2 = heatmap(model(W), title="observed")
+p3 = scatter(y_test, model(W), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
