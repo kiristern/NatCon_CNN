@@ -33,14 +33,37 @@ cd(@__DIR__)
 end
 
 stride = 10
+window = 1
 
-#extract and vectorize values for 10x10 resistance, origin and connectivity layers
-xr = vec(r[200:209,200:209]) #resistance
-xo = vec(o[200:209,200:209]) #origin
-x_test = vcat(xr,xo)
-y_test = c[200:209,200:209] #connectivity - what we want to predict
+Random.seed!(1234)
+#select coordinates where there is data
+Q = sample(findall(r .> 0), window)
+Qprime = Tuple.(Q)
 
 
+W = []
+Z = []
+for q in Qprime
+  xr = vec(r[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
+  xo = vec(o[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
+  x_test = vcat(xr, xo)
+  y_test = c[first(q):(first(q)+stride-1),last(q):(last(q)+stride-1)]
+  push!(W, x_test)
+  push!(Z, y_test)
+end
+W
+Z
+
+r[615:(615+stride-1),217:(217+stride-1)]
+
+#create a range around window
+range = []
+for f in Q
+  a, b = Tuple(f)
+  m = r[a-10:a+stride+9,b-10:b+stride+9]
+  push!(range, m)
+end
+range
 
 
 Random.seed!(1234)
