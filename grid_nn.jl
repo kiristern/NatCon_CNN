@@ -54,7 +54,6 @@ end
 W
 Z
 
-r[615:(615+stride-1),217:(217+stride-1)]
 
 #create a range around window
 range = []
