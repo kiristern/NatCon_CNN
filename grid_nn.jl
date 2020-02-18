@@ -33,27 +33,15 @@ cd(@__DIR__)
 end
 
 stride = 10
-window = 9
 
-Random.seed!(1234)
+#extract and vectorize values for 10x10 resistance, origin and connectivity layers
+xr = vec(r[200:209,200:209]) #resistance
+xo = vec(o[200:209,200:209]) #origin
+x_test = vcat(xr,xo)
+y_test = c[200:209,200:209] #connectivity - what we want to predict
 
-#select 9 coordinates where there is data
-Q = sample(findall(r .> 0), window)
-Q = Tuple.(Q)
 
 
-W = []
-Z = []
-for q in Q
-  xr = vec(r[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
-  xo = vec(o[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
-  x_test = vcat(xr, xo)
-  y_test = c[first(q):(first(q)+stride-1),last(q):(last(q)+stride-1)]
-  push!(W, x_test)
-  push!(Z, y_test)
-end
-W
-Z
 
 Random.seed!(1234)
 X = []
@@ -101,7 +89,7 @@ end
 
 #have a look
 @info "plotting"
-p1 = heatmap(Z, title="predicted")
-p2 = heatmap(model(W), title="observed")
-p3 = scatter(Z, model(W), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
+p1 = heatmap(y_test, title="predicted")
+p2 = heatmap(model(x_test, title="observed")
+p3 = scatter(y_test, model(x_test), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
