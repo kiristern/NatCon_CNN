@@ -59,27 +59,29 @@ Z
 range = []
 for f in Q
   a, b = Tuple(f)
-  m = r[a-10:a+stride+9,b-10:b+stride+9]
+  m = [a-10:a+stride+9,b-10:b+stride+9]
   push!(range, m)
 end
 range
 
-collect(range[1][1])
-range[1][2]
-
-collect(range)
-
-X = []
+P1 = []
 for i in 1:length(range)
   u = collect(range[i][1])
-  push!(X, u)
+  push!(P1, u)
 end
-X
+P1 = vcat(P1...)
+
+P2 = []
+for i in 1:length(range)
+  u = collect(range[i][1])
+  push!(P2, u)
+end
+P2 = vcat(P2...)
 
 
 X = []
 Y = []
-for i in [range[1][1]...], j in [range[1][2]...]
+for i in P1, j in P2
   xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
   xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
   x = vcat(xr, xo) #stack the matrices together
@@ -92,23 +94,6 @@ end
 X
 Y
 
-Random.seed!(1234)
-X = []
-Y = []
-#taking 150 random 10x10 matrices of r, o and c layers
-for i in rand(10:950, 150), j in rand(10:950, 150)
-  #taking groups of matrices of dimensions stridexstride
-  xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
-  xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
-  x = vcat(xr, xo) #stack the matrices together
-  y = c[i:(i+stride-1),j:(j+stride-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
-    push!(X, x)
-    push!(Y, y)
-  end
-end
-X
-Y
 
 train_data = zip(X, Y)
 
