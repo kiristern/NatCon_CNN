@@ -33,7 +33,7 @@ cd(@__DIR__)
 end
 
 stride = 10
-window = 1
+window = 2
 
 Random.seed!(1234)
 #select coordinates where there is data
@@ -64,6 +64,33 @@ for f in Q
 end
 range
 
+collect(range[1][1])
+range[1][2]
+
+collect(range)
+
+X = []
+for i in 1:length(range)
+  u = collect(range[i][1])
+  push!(X, u)
+end
+X
+
+
+X = []
+Y = []
+for i in [range[1][1]...], j in [range[1][2]...]
+  xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
+  xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
+  x = vcat(xr, xo) #stack the matrices together
+  y = c[i:(i+stride-1),j:(j+stride-1)] #matrix we want to predict
+  if minimum(y) > 0 #predict only when there is connectivity
+    push!(X, x)
+    push!(Y, y)
+  end
+end
+X
+Y
 
 Random.seed!(1234)
 X = []
