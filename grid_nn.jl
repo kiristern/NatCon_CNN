@@ -33,14 +33,14 @@ cd(@__DIR__)
 end
 
 stride = 10
-window = 2
+grids = 1
 
 Random.seed!(1234)
-#select coordinates where there is data
-Q = sample(findall(r .> 0), window)
+#select 1 coordinates where there is data
+Q = sample(findall(r .> 0), grids)
 Qprime = Tuple.(Q)
 
-
+#testing data
 W = []
 Z = []
 for q in Qprime
@@ -64,24 +64,27 @@ for f in Q
 end
 range
 
-P1 = []
+#get all cartesian points for range
+Px = []
 for i in 1:length(range)
   u = collect(range[i][1])
-  push!(P1, u)
+  push!(Px, u)
 end
-P1 = vcat(P1...)
+Px = vcat(Px...)
 
-P2 = []
+Py = []
 for i in 1:length(range)
   u = collect(range[i][1])
-  push!(P2, u)
+  push!(Py, u)
 end
-P2 = vcat(P2...)
+Py = vcat(Py...)
 
 
+#moving window
+#training data within range
 X = []
 Y = []
-for i in P1, j in P2
+for i in Px, j in Py
   xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
   xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
   x = vcat(xr, xo) #stack the matrices together
@@ -123,7 +126,7 @@ end
 
 #have a look
 @info "plotting"
-p1 = heatmap(y_test, title="predicted")
-p2 = heatmap(model(x_test, title="observed")
-p3 = scatter(y_test, model(x_test), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
+p1 = heatmap(Z[1], title="predicted")
+p2 = heatmap(model(W[1]), title="observed")
+p3 = scatter(Z[1], model(W[1]), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
