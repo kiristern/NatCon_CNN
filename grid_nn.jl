@@ -130,3 +130,5 @@ p1 = heatmap(Z[1], title="predicted")
 p2 = heatmap(model(W[1]), title="observed")
 p3 = scatter(Z[1], model(W[1]), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
+
+#test
