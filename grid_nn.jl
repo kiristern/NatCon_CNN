@@ -37,27 +37,26 @@ grids = 1
 
 Random.seed!(1234)
 #select 1 coordinates where there is data
-Q = sample(findall(r .> 0), grids)
-Qprime = Tuple.(Q)
+cart_idx = sample(findall(r .> 0), grids)
+coordinates = Tuple.(cart_idx)
 
 #testing data
-W = []
-Z = []
-for q in Qprime
+test_input = []
+test_output = []
+for q in coordinates
   xr = vec(r[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
   xo = vec(o[first(q):(first(q)+stride-1), last(q):(last(q)+stride-1)])
   x_test = vcat(xr, xo)
   y_test = c[first(q):(first(q)+stride-1),last(q):(last(q)+stride-1)]
-  push!(W, x_test)
-  push!(Z, y_test)
+  push!(test_input, x_test)
+  push!(test_output, y_test)
 end
-W
-Z
+
 
 
 #create a range around window
 range = []
-for f in Q
+for f in cart_idx
   a, b = Tuple(f)
   m = [a-10:a+stride+9,b-10:b+stride+9]
   push!(range, m)
@@ -65,26 +64,26 @@ end
 range
 
 #get all cartesian points for range
-Px = []
+Px_range = []
 for i in 1:length(range)
   u = collect(range[i][1])
-  push!(Px, u)
+  push!(Px_range, u)
 end
-Px = vcat(Px...)
+Px_range = vcat(Px_range...)
 
-Py = []
+Py_range = []
 for i in 1:length(range)
-  u = collect(range[i][1])
-  push!(Py, u)
+  u = collect(range[i][2])
+  push!(Py_range, u)
 end
-Py = vcat(Py...)
+Py_range = vcat(Py_range...)
 
 
 #moving window
 #training data within range
 X = []
 Y = []
-for i in Px, j in Py
+for i in Px_range, j in Py_range
   xr = vec(r[i:(i+stride-1),j:(j+stride-1)])
   xo = vec(o[i:(i+stride-1),j:(j+stride-1)])
   x = vcat(xr, xo) #stack the matrices together
