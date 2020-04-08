@@ -32,8 +32,8 @@ nan_to_0(Connectivity)
 # Extract and vectorize 150 random 10x10 resistance, origin, and connectivity layers
 Random.seed!(1234)
 Stride = 10
-imgs = []
-labels = []
+train_imgs = []
+train_labels = []
 
 for i in rand(10:950, 150), j in rand(10:950, 150)
   #taking groups of matrices of dimensions StridexStride
