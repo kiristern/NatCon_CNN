@@ -1,3 +1,5 @@
+##CREATE A CUSTOM VALIDATION SET BY SAMPLING FROM THE TRAINING DATASET.
+
 include("preprocess.jl")
 
 imgs
