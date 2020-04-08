@@ -34,4 +34,4 @@ function partition_dataset(imgs, labels, valid_ratio=0.1, Shuffle=true)
 end
 
 Random.seed!(1234)
-partition_dataset(imgs, labels)
+train_imgs, train_labels, valid_imgs, valid_labels = partition_dataset(imgs, labels)
