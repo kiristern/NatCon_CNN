@@ -10,7 +10,6 @@ function partition_dataset(imgs, labels, valid_ratio=0.1, Shuffle=true)
   labels: the labels associated with the provided images.
   valid_ratio (optional): the portion of the data that will be used in the validation set. Default: 0.1.
   shuffle (optional): whether or not to shuffle the data. Default: True.
-  seed (optional): the seed of the numpy random generator: Default: 1234.
 
   Return:
   A tuple of 4 elements (train_imgs, train_labels, valid_imgs, valid_labels) where:
