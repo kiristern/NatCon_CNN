@@ -1,4 +1,6 @@
-##CREATE A CUSTOM VALIDATION SET BY SAMPLING FROM THE TRAINING DATASET.
+#=
+Create a custom validation set by sampling from the training dataset
+=#
 
 include("preprocess.jl")
 
