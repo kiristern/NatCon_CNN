@@ -39,7 +39,7 @@ for i in rand(10:950, 150), j in rand(10:950, 150)
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
+  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
   y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
   if minimum(y) > 0 #predict only when there is connectivity
     push!(imgs, x)
