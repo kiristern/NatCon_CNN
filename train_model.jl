@@ -50,7 +50,7 @@ model[1:7](train_set[1][1]) #layer 7: 288x32 (288 = 3x3x32)
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set)
-test_set = gpu.(test_set)
+validation_set = gpu.(validation_set)
 model = gpu(model)
 
 # Make sure our model is nicely precompiled before starting our training loop
@@ -89,7 +89,7 @@ last_improvement = 0
     end
 
     # Calculate accuracy:
-    acc = accuracy(test_set...)
+    acc = accuracy(validation_set...)
     @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
 
     # If our accuracy is good enough, quit out.
