@@ -65,3 +65,9 @@ for i in rand(10:950, 150), j in rand(10:950, 150)
     push!(test_labels, y)
   end
 end
+
+#script returns:
+imgs
+labels
+test_imgs
+test_labels
