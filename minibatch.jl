@@ -28,3 +28,7 @@ typeof(train_set) #tuple of 4D X_training data and 4D Y_labels
 #Check dimensions: width x height x channels x #batches
 size(train_set[1][1]) # 10x10x2x32
 size(train_set[1][2]) # 10x10x1x32
+
+#prepare validation set as one giant minibatch
+mb_val_idxs = Iterators.partition(1:length(valid_imgs), batch_size)
+validation_set = [make_minibatch(valid_imgs, valid_labels, i) for i in mb_val_idxs]
