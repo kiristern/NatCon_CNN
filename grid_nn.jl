@@ -96,7 +96,6 @@ end
 X
 Y
 
-
 train_data = zip(X, Y)
 
 model = Chain(
@@ -125,7 +124,7 @@ end
 
 #have a look
 @info "plotting"
-p1 = heatmap(Z[1], title="predicted")
-p2 = heatmap(model(W[1]), title="observed")
-p3 = scatter(Z[1], model(W[1]), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
+p1 = heatmap(test_output[1], title="predicted")
+p2 = heatmap(model(test_input[1]), title="observed")
+p3 = scatter(test_output[1], model(test_input[1]), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
