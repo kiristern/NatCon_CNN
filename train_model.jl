@@ -1,6 +1,16 @@
 include("dataloader.jl")
 include("minibatch.jl")
-using IterTools: ncycle
+
+using Flux, Statistics
+using Flux: onecold, crossentropy
+using Base.Iterators: repeated, partition
+using Printf, BSON
+using CUDAapi
+if has_cuda()
+    @info "CUDA is on"
+    import CuArrays
+    CuArrays.allowscalar(false)
+end
 
 train_set
 validation_set
