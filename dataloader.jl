@@ -1,4 +1,6 @@
-## TRANSFORM, SHUFFLE, AND BATCH DATASETS
+#=
+Transform, shuffle and batch datasets
+=#
 
 using Flux.Data
 using Printf
