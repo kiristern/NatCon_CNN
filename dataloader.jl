@@ -11,7 +11,7 @@ train_loader.data # original dataset
 batch_size=32
 epochs = 5
 
-train_loader = DataLoader(train_imgs, train_labels, batchsize=batch_size, partial=false, shuffle=true)
+train_loader = DataLoader(train_maps, train_connect, batchsize=batch_size, partial=false, shuffle=true)
     #If shuffle=true, shuffles the observations each time iterations are re-started.
     #If partial=false, drops the last mini-batch if it is smaller than the batchsize.
 for epoch in 1:epochs
