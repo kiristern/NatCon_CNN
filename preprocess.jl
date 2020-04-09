@@ -32,8 +32,8 @@ nan_to_0(Connectivity)
 # Extract 150 random 28x28 resistance, origin, and connectivity layers
 Random.seed!(1234)
 Stride = 28
-imgs = []
-labels = []
+maps = []
+connect = []
 
 for i in rand(10:950, 150), j in rand(10:950, 150)
   #taking groups of matrices of dimensions StridexStride
@@ -42,16 +42,16 @@ for i in rand(10:950, 150), j in rand(10:950, 150)
   x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
   y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
   if minimum(y) > 0 #predict only when there is connectivity
-    push!(imgs, x)
-    push!(labels, y)
+    push!(maps, x)
+    push!(connect, y)
   end
 end
 
 #create Testing dataset
 Random.seed!(5678)
 Stride = 28
-test_imgs = []
-test_labels = []
+test_maps = []
+test_connect = []
 
 for i in rand(10:950, 150), j in rand(10:950, 150)
   #taking groups of matrices of dimensions StridexStride
@@ -60,13 +60,13 @@ for i in rand(10:950, 150), j in rand(10:950, 150)
   x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
   y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
   if minimum(y) > 0 #predict only when there is connectivity
-    push!(test_imgs, x)
-    push!(test_labels, y)
+    push!(test_maps, x)
+    push!(test_connect, y)
   end
 end
 
 #script returns:
-imgs
-labels
-test_imgs
-test_labels
+maps
+connect
+test_maps
+test_connect

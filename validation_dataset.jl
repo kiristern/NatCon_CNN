@@ -4,37 +4,37 @@ Create a custom validation set by sampling from the training dataset
 
 include("preprocess.jl")
 
-imgs
-labels
+maps
+connect
 
-function partition_dataset(imgs, labels, valid_ratio=0.1, Shuffle=true)
+function partition_dataset(maps, connect, valid_ratio=0.1, Shuffle=true)
   """
   Args:
-  imgs: array representing the image set from which the partitioning is made.
-  labels: the labels associated with the provided images.
+  maps: array representing the image set from which the partitioning is made.
+  connect: the connect associated with the provided images.
   valid_ratio (optional): the portion of the data that will be used in the validation set. Default: 0.1.
   shuffle (optional): whether or not to shuffle the data. Default: True.
 
   Return:
-  A tuple of 4 elements (train_imgs, train_labels, valid_imgs, valid_labels) where:
-  train_imgs: an array of images for the training set.
-  train_labels: labels associated with the images in the training set.
-  valid_imgs: an array of images for the validation set.
-  valid_labels: labels associated with the images in the validation set.
+  A tuple of 4 elements (train_maps, train_connect, valid_maps, valid_connect) where:
+  train_maps: an array of images for the training set.
+  train_connect: connect associated with the images in the training set.
+  valid_maps: an array of images for the validation set.
+  valid_connect: connect associated with the images in the validation set.
   """
   if Shuffle == true
-    indices = shuffle(collect(1:size(imgs,1)))
+    indices = shuffle(collect(1:size(maps,1)))
   else
-    indices = collect(1:size(imgs,1))
+    indices = collect(1:size(maps,1))
   end
 
   n_training = Int(round((1.0 - valid_ratio)*length(indices)))
   train_idx, valid_idx = indices[1:n_training], indices[n_training+1:end]
 
-  train_imgs, valid_imgs = imgs[train_idx], imgs[valid_idx]
-  train_labels, valid_labels = labels[train_idx], labels[valid_idx]
-  return train_imgs, train_labels, valid_imgs, valid_labels
+  train_maps, valid_maps = maps[train_idx], maps[valid_idx]
+  train_connect, valid_connect = connect[train_idx], connect[valid_idx]
+  return train_maps, train_connect, valid_maps, valid_connect
 end
 
 Random.seed!(1234)
-train_imgs, train_labels, valid_imgs, valid_labels = partition_dataset(imgs, labels)
+train_maps, train_connect, valid_maps, valid_connect = partition_dataset(maps, connect)
