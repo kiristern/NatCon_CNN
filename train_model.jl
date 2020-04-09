@@ -5,19 +5,6 @@ using IterTools: ncycle
 train_set
 validation_set
 
-#=
-To train a model, we need 4 things:
-- OBJECTIVE FUNCTION, that evaluates how well a model is doing given some input data
-- Trainable PARAMETERS of the model
-- A collection of DATA POINTS that will be provided to the OBJECTIVE FUNCTION
-- an OPTIMIZER that will update the model parameters appropriately
-With these, can call the <train!> function:
-    train!(loss, params, data, opt; cb)
-- For each datapoint d in data compute the gradient of loss(d...) through backpropagation and call the optimizer opt.
-- A callback is given with the keyword argument cb. For example, this will print "training" every 10 seconds (using Flux.throttle):
-    train!(loss, params, data, opt, cb = throttle(() -> println("training"), 10))
-=#
-
 model = Chain(
     #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
     Conv((3,3), 2=>16, pad=(1,1), relu),
@@ -81,7 +68,7 @@ opt = ADAM(0.001)
 @info("Beginning training loop...")
 best_acc = 0.0
 last_improvement = 0
-for epoch_idx in 1:100
+@time @elapsed for epoch_idx in 1:100
     global best_acc, last_improvement
     # Train for a single epoch
     Flux.train!(loss, params(model), train_set, opt)
@@ -136,8 +123,8 @@ epochs = 3
 @info("Beginning training loop...")
 Random.seed!(1234)
 @time @elapsed for epoch in 1:epochs
-  index = sample(1:length(X), epochs, replace=false)
-  Flux.train!(loss, params(model), ncycle(train_loader, epochs), ADAM(0.001), cb = Flux.throttle(evalcb, 1))
+    index = sample(1:length(X), epochs, replace=false)
+    Flux.train!(loss, params(model), ncycle(train_loader, epochs), ADAM(0.001), cb = Flux.throttle(evalcb, 1))
 end
 
 #have a look
