@@ -12,7 +12,7 @@ Resistance = convert(Matrix, resistance)
 Origin = convert(Matrix, origin)
 Connectivity = convert(Matrix, connectivity)
 
-#remove last row in a to get same size as b and c
+#remove last row in Resistance to get same size as Origin and Connectivity
 Resistance = Resistance[1:end-1, :]
 
 #change NaN to 0
@@ -31,7 +31,7 @@ nan_to_0(Connectivity)
 #create Training dataset
 # Extract 150 random 10x10 resistance, origin, and connectivity layers
 Random.seed!(1234)
-Stride = 10
+Stride = 28
 imgs = []
 labels = []
 
@@ -50,7 +50,7 @@ end
 #create Testing dataset
 # Extract and vectorize 150 random 10x10 resistance, origin, and connectivity layers
 Random.seed!(5678)
-Stride = 10
+Stride = 28
 test_imgs = []
 test_labels = []
 
