@@ -29,7 +29,7 @@ nan_to_0(Origin)
 nan_to_0(Connectivity)
 
 #create Training dataset
-# Extract 150 random 10x10 resistance, origin, and connectivity layers
+# Extract 150 random 28x28 resistance, origin, and connectivity layers
 Random.seed!(1234)
 Stride = 28
 imgs = []
@@ -48,7 +48,6 @@ for i in rand(10:950, 150), j in rand(10:950, 150)
 end
 
 #create Testing dataset
-# Extract and vectorize 150 random 10x10 resistance, origin, and connectivity layers
 Random.seed!(5678)
 Stride = 28
 test_imgs = []
