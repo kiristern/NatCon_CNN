@@ -27,7 +27,7 @@ model = Chain(
     Conv((3,3), 32=>32, pad=(1,1), relu),
     MaxPool((2,2)),
 
-    #flattens the data from 4D to 2D suitable for dense layer and training
+    #flatten from 3D tensor to a 2D one, suitable for dense layer and training
     x -> reshape(x, :, size(x, 4)),
     #takes output of previous layer (288) as input; and outputs a size of 10x32
     Dense(288, 10),
@@ -35,7 +35,7 @@ model = Chain(
     Dense(10, 1, σ)
 
     #softmax to get nice probabilities
-    softmax,
+    #softmax,
 )
 
 #View layer outputs
@@ -61,9 +61,33 @@ augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
 paramvec(m) = vcat(map(p->reshape(p, :), params(m))...)
 anynan(x) = any(isnan.(x))
 
-# `loss()` calculates the crossentropy loss between our prediction `y_hat`
-# (calculated from `model(x)`) and the ground truth `y`.  We augment the data
-# a bit, adding gaussian random noise to our image to make it more robust.
+#=
+`loss()` calculates the crossentropy loss between our prediction `y_hat` (calculated from `model(x)`) and the ground truth `y`.  We augment the data a bit, adding gaussian random noise to our image to make it more robust.
+=#
+
+
+# loss NaN
+ϵ = 1.0f-32
+compare(y::Array, y′) = maximum(y′, dims = 4) .== maximum(y .* y′, dims = 4)
+accuracy(x, y::Array) = mean(compare(y, m(x)))
+function loss(x,y)
+  ŷ = m(x)
+  return crossentropy(ŷ .+ ϵ,y)
+end
+
+function accuracy(data_set)
+  batch_size = size(data_set[1][1])[end]
+  l = length(data_set)*batch_size
+  s = 0f0
+  for (x,y::Array) in data_set
+    s += sum(compare(y|>gpu, m(x|>gpu)))
+  end
+  return s/l
+end
+
+
+
+
 function loss(x, y)
     x̂ = augment(x)
     ŷ = model(x̂)
