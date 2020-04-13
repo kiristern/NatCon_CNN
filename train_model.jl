@@ -30,7 +30,7 @@ model = Chain(
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
     x -> reshape(x, :, size(x, 4)),
     #takes output of previous layer (288) as input; and outputs a size of 10x32
-    Dense(288, 10),
+    Dense(32, 10),
     #want final output dims 1x32
     Dense(10, 1, σ)
 
@@ -45,8 +45,10 @@ model[1:3](train_set[1][1]) #layer 3: 14x14x32x32
 model[1:4](train_set[1][1]) #layer 4: 7x7x32x32
 model[1:5](train_set[1][1]) #layer 5: 7x7x32x32
 model[1:6](train_set[1][1]) #layer 6: 3x3x32x32
-model[1:7](train_set[1][1]) #layer 7: 288x32 (288 = 3x3x32)
-#softmax is to output probabilities of which label the model has predicted
+model[1:7](train_set[1][1]) #layer 7: 32x32 (32 = 1x1x32)
+model[1:8](train_set[1][1])
+model[1:9](train_set[1][1])
+# #softmax is to output probabilities of which label the model has predicted
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set)
@@ -67,23 +69,23 @@ anynan(x) = any(isnan.(x))
 
 
 # loss NaN
-ϵ = 1.0f-32
-compare(y::Array, y′) = maximum(y′, dims = 4) .== maximum(y .* y′, dims = 4)
-accuracy(x, y::Array) = mean(compare(y, m(x)))
-function loss(x,y)
-  ŷ = m(x)
-  return crossentropy(ŷ .+ ϵ,y)
-end
-
-function accuracy(data_set)
-  batch_size = size(data_set[1][1])[end]
-  l = length(data_set)*batch_size
-  s = 0f0
-  for (x,y::Array) in data_set
-    s += sum(compare(y|>gpu, m(x|>gpu)))
-  end
-  return s/l
-end
+# ϵ = 1.0f-32
+# compare(y::Array, y′) = maximum(y′, dims = 4) .== maximum(y .* y′, dims = 4)
+# accuracy(x, y::Array) = mean(compare(y, m(x)))
+# function loss(x,y)
+#   ŷ = m(x)
+#   return crossentropy(ŷ .+ ϵ,y)
+# end
+#
+# function accuracy(data_set)
+#   batch_size = size(data_set[1][1])[end]
+#   l = length(data_set)*batch_size
+#   s = 0f0
+#   for (x,y::Array) in data_set
+#     s += sum(compare(y|>gpu, m(x|>gpu)))
+#   end
+#   return s/l
+# end
 
 
 

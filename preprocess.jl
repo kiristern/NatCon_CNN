@@ -1,5 +1,5 @@
 using CSV
-using Flux
+using Flux #v0.10.3
 using Random
 
 cd(@__DIR__)
@@ -31,7 +31,7 @@ nan_to_0(Connectivity)
 #create Training dataset
 # Extract 150 random 28x28 resistance, origin, and connectivity layers
 Random.seed!(1234)
-Stride = 28
+Stride = 9
 maps = []
 connect = []
 
@@ -49,7 +49,7 @@ end
 
 #create Testing dataset
 Random.seed!(5678)
-Stride = 28
+Stride = 9
 test_maps = []
 test_connect = []
 
