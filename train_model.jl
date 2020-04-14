@@ -27,7 +27,7 @@ model = Chain(
 
     Dense(128, 81),
 
-    x -> reshape(x, (9, 9, 1, batch_size))
+    x -> reshape(x, (stride, stride, 1, batch_size))
 )
 
 #View layer outputs
