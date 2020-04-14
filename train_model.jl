@@ -58,7 +58,7 @@ model = gpu(model)
 # Make sure our model is nicely precompiled before starting our training loop
 model(train_set[1][1])
 
-# We augment `x` a little bit here, adding in random noise.
+# Augment `x` a little bit here, adding in random noise.
 augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
 paramvec(m) = vcat(map(p->reshape(p, :), params(m))...)
 anynan(x) = any(isnan.(x))
@@ -93,7 +93,7 @@ anynan(x) = any(isnan.(x))
 function loss(x, y)
     x̂ = augment(x)
     ŷ = model(x̂)
-    return crossentropy(ŷ, y)
+    return crossentropy(ŷ, y) #TODO ensure input and output are same dimensions!! 
 end
 accuracy(x, y) = mean(onecold(cpu(model(x))) .== onecold(cpu(y)))
 
