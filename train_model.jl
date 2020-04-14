@@ -23,11 +23,11 @@ model = Chain(
     Conv((3,3), 16=>32, pad=(1,1), relu),
     MaxPool((2,2)),
 
-    x -> reshape(x, (128, 32)),
+    x -> reshape(x, (128, batch_size)),
 
     Dense(128, 81),
 
-    x -> reshape(x, (9, 9, 1, 32))
+    x -> reshape(x, (9, 9, 1, batch_size))
 )
 
 #View layer outputs
