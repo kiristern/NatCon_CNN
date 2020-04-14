@@ -29,7 +29,7 @@ model = Chain(
 
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
     x -> reshape(x, :, size(x, 4)),
-    #takes output of previous layer (288) as input; and outputs a size of 10x32
+    #takes output of previous layer (32) as input; and outputs a size of 10x32
     Dense(32, 10),
     #want final output dims 1x32
     Dense(10, 1, σ)
@@ -39,15 +39,15 @@ model = Chain(
 )
 
 #View layer outputs
-model[1](train_set[1][1]) #layer 1: 28x28x16x32
-model[1:2](train_set[1][1]) #layer 2: 14x14x16x32
-model[1:3](train_set[1][1]) #layer 3: 14x14x32x32
-model[1:4](train_set[1][1]) #layer 4: 7x7x32x32
-model[1:5](train_set[1][1]) #layer 5: 7x7x32x32
-model[1:6](train_set[1][1]) #layer 6: 3x3x32x32
+model[1](train_set[1][1]) #layer 1: 9x9x16x32
+model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
+model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
+model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
+model[1:5](train_set[1][1]) #layer 5: 2x2x32x32
+model[1:6](train_set[1][1]) #layer 6: 1x1x32x32
 model[1:7](train_set[1][1]) #layer 7: 32x32 (32 = 1x1x32)
-model[1:8](train_set[1][1])
-model[1:9](train_set[1][1])
+model[1:8](train_set[1][1]) #layer 8: 10x32
+model[1:9](train_set[1][1]) #layer 9: 1x32
 # #softmax is to output probabilities of which label the model has predicted
 
 # Load model and datasets onto GPU, if enabled
@@ -97,8 +97,7 @@ function loss(x, y)
 end
 accuracy(x, y) = mean(onecold(cpu(model(x))) .== onecold(cpu(y)))
 
-# Train our model with the given training set using the ADAM optimizer and
-# printing out performance against the test set as we go.
+# Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
 opt = ADAM(0.001)
 
 @info("Beginning training loop...")
