@@ -23,10 +23,12 @@ model = Chain(
     Conv((3,3), 16=>32, pad=(1,1), relu),
     MaxPool((2,2)),
 
+    #flatten from 3D tensor to a 2D one, suitable for dense layer and training
     x -> reshape(x, (128, batch_size)),
 
     Dense(128, 81),
 
+    #reshape to match output dimensions
     x -> reshape(x, (stride, stride, 1, batch_size))
 )
 
