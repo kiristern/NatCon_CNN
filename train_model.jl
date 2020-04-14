@@ -18,24 +18,16 @@ validation_set
 model = Chain(
     #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
     Conv((3,3), 2=>16, pad=(1,1), relu),
-    #2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
     MaxPool((2,2)),
-
+    #2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
     Conv((3,3), 16=>32, pad=(1,1), relu),
     MaxPool((2,2)),
 
-    Conv((3,3), 32=>32, pad=(1,1), relu),
-    MaxPool((2,2)),
+    x -> reshape(x, (128, 32)),
 
-    #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, :, size(x, 4)),
-    #takes output of previous layer (32) as input; and outputs a size of 10x32
-    Dense(32, 10),
-    #want final output dims 1x32
-    Dense(10, 1, σ)
+    Dense(128, 81),
 
-    #softmax to get nice probabilities
-    #softmax,
+    x -> reshape(x, (9, 9, 1, 32))
 )
 
 #View layer outputs
@@ -43,12 +35,9 @@ model[1](train_set[1][1]) #layer 1: 9x9x16x32
 model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
 model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
 model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
-model[1:5](train_set[1][1]) #layer 5: 2x2x32x32
-model[1:6](train_set[1][1]) #layer 6: 1x1x32x32
-model[1:7](train_set[1][1]) #layer 7: 32x32 (32 = 1x1x32)
-model[1:8](train_set[1][1]) #layer 8: 10x32
-model[1:9](train_set[1][1]) #layer 9: 1x32
-# #softmax is to output probabilities of which label the model has predicted
+model[1:5](train_set[1][1]) #layer 5: 128x32
+model[1:6](train_set[1][1]) #layer 6: 81x32
+model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set)
@@ -93,7 +82,7 @@ anynan(x) = any(isnan.(x))
 function loss(x, y)
     x̂ = augment(x)
     ŷ = model(x̂)
-    return crossentropy(ŷ, y) #TODO ensure input and output are same dimensions!! 
+    return crossentropy(ŷ, y)
 end
 accuracy(x, y) = mean(onecold(cpu(model(x))) .== onecold(cpu(y)))
 
