@@ -12,6 +12,10 @@ if has_cuda()
     CuArrays.allowscalar(false)
 end
 
+#if non-minibatching
+training_set = zip(train_maps, train_connect)
+validating_set = zip(valid_maps, valid_connect)
+
 train_set
 validation_set
 
@@ -29,7 +33,7 @@ model = Chain(
     Dense(128, 81),
 
     #reshape to match output dimensions
-    x -> reshape(x, (stride, stride, 1, batch_size))
+    x -> reshape(x, (Stride, Stride, 1, batch_size))
 )
 
 #View layer outputs
