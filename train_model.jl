@@ -1,16 +1,16 @@
-include("dataloader.jl")
-include("minibatch.jl")
+# include("dataloader.jl")
+# include("minibatch.jl")
 
 using Flux, Statistics
 using Flux: onecold, crossentropy
 using Base.Iterators: repeated, partition
 using Printf, BSON
-using CUDAapi
-if has_cuda()
-    @info "CUDA is on"
-    import CuArrays
-    CuArrays.allowscalar(false)
-end
+# using CUDAapi
+# if has_cuda()
+#     @info "CUDA is on"
+#     import CuArrays
+#     CuArrays.allowscalar(false)
+# end
 
 #if non-minibatching
 # training_set = collect(zip(train_maps, train_connect))
@@ -28,31 +28,13 @@ model = Chain(
     MaxPool((2,2)),
 
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, (128, batch_size)),
+    x -> reshape(x, (128, 32)),
 
-    Dense(128, 81),
+     Dense(128, 81),
 
     #reshape to match output dimensions
     x -> reshape(x, (Stride, Stride, 1, batch_size))
 )
-
-#  model2 = Chain(
-#     #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
-#     Conv((3,3), 2=>16, pad=(1,1), relu),
-#     MaxPool((2,2)),
-#     #2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
-#     Conv((3,3), 16=>32, pad=(1,1), relu),
-#     MaxPool((2,2)),
-#
-#     Conv((3,3), 32=>9, pad=(1,1), relu),
-#     MaxPool((2,2)),
-#
-#     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-#     x -> reshape(x, (9, batch_size)),
-# )
-
-
-
 
 #View layer outputs
 model[1](train_set[1][1]) #layer 1: 9x9x16x32
@@ -63,32 +45,24 @@ model[1:5](train_set[1][1]) #layer 5: 128x32
 model[1:6](train_set[1][1]) #layer 6: 81x32
 model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
 
-# model2[1](training_set[1][1]) #layer 1: 9x9x16x32
-# model2[1:2](training_set[1][1]) #layer 2: 4x4x16x32
-# model2[1:3](training_set[1][1]) #layer 3: 4x4x32x32
-# model2[1:4](training_set[1][1]) #layer 4: 2x2x32x32
-# model2[1:5](training_set[1][1]) #layer 5: 128x32
-# model2[1:6](training_set[1][1]) #layer 6: 81x32
-# model2[1:7](training_set[1][1]) #layer 7:
-
 # Load model and datasets onto GPU, if enabled
-train_set = gpu.(train_set)
-validation_set = gpu.(validation_set)
-model = gpu(model)
+# train_set = gpu.(train_set)
+# validation_set = gpu.(validation_set)
+# model = gpu(model)
 
 # Make sure our model is nicely precompiled before starting our training loop
-model(train_set[1][1])
+model(train_set[1][1])[:, :, 1, 32] #see last output
 
 # Augment `x` a little bit here, adding in random noise.
 augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
-paramvec(m) = vcat(map(p->reshape(p, :), params(m))...)
+paramvec(model) = vcat(map(p->reshape(p, :), params(model))...)
 anynan(x) = any(isnan.(x))
 
 
 function loss(x, y)
     x̂ = augment(x)
     ŷ = model(x̂)
-    return sum((y .- ŷ).^2)./prod(size(x̂)) #divided by the actual value
+    return sum((y .- ŷ).^2)./prod(size(x)) #divided by the actual value
 end
 
 accuracy(x, y) = mean(onecold(cpu(model(x))) .== onecold(cpu(y)))
@@ -154,8 +128,7 @@ epochs = 3
 @info("Beginning training loop...")
 Random.seed!(1234)
 @time @elapsed for epoch in 1:epochs
-    index = sample(1:length(X), epochs, replace=false)
-    Flux.train!(loss, params(model), ncycle(train_loader, epochs), ADAM(0.001), cb = Flux.throttle(evalcb, 1))
+    Flux.train!(loss, params(model), ncycle(train_loader, epochs), ADAM(0.001))#, #cb = Flux.throttle(evalcb, 1))
 end
 
 #have a look
