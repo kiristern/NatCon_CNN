@@ -25,8 +25,10 @@ mb_idxs = Iterators.partition(1:length(train_maps)-31, batch_size) #-31 to omit 
 train_set = [make_minibatch(train_maps, train_connect, i) for i in mb_idxs]
 #train set in one-go: used to calculate accuracy with the train set
 # train_set_full = make_minibatch(train_maps, train_connect, 1:length(train_maps))
+
+mb_idxs2 = Iterators.partition(1:length(valid_maps)-25, batch_size)
 #prepare validation set as one giant minibatch
-validation_set = make_minibatch(valid_maps, valid_connect, 1:length(valid_maps))
+validation_set = [make_minibatch(valid_maps, valid_connect, i) for i in mb_idxs2]
 
 #Check how data has been arranged
 typeof(train_set) #tuple of 4D X_training data and 4D Y_labels
