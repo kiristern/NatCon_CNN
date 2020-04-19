@@ -8,9 +8,9 @@ cd(@__DIR__)
 
 @time begin
   #Read in the CSV (comma separated values) file and convert them to arrays.
-  r = CSV.read("data/resistance.csv")
-  o = CSV.read("data/origin.csv")
-  c = CSV.read("data/connectivity.csv", delim="\t")
+  r = CSV.read("../data/resistance.csv")
+  o = CSV.read("../data/origin.csv")
+  c = CSV.read("../data/connectivity.csv", delim="\t")
   r = convert(Matrix, r)
   o = convert(Matrix, o)
   c = convert(Matrix, c)
