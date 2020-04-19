@@ -78,21 +78,11 @@ sum((y .- ŷ).^2)
 model(train_set[1][1][:][1])
 
 function loss(x, y)
-    # x̂ = augment(x)
-    ŷ = model(x)
+    x̂ = augment(x)
+    ŷ = model(x̂)
     return sum((y .- ŷ).^2)#./prod(size(x)) #divided by the actual value
 end
 
-
-
-#evaluate callback
-evalcb() = @show(loss(train_set_full, validation_set))
-
-epochs = 3
-@info("Beginning training loop...")
-@time @elapsed for epoch in 1:epochs
-    Flux.train!(loss, params(model), train_set, opt, cd)#, #cb = Flux.throttle(evalcb, 5))
-end
 
 x = train_set[1][1]
 y = train_set[1][2]
@@ -100,11 +90,22 @@ model(x)
 # Difference per image
 accuracy(x, y) = mean(sum((y .- model(x)).^2, dims = (1,2)))
 # Difference per pixel
-accuracy(x, y) = mean((y .- model(x)).^2)
+accuracy(x, y) = 1 - mean((y .- model(x)).^2)
 # accuracy(x, y) = mean(model(x) .== y)
 
 validation_set
-[validation_set...]
+tmp = [validation_set...]
+
+x = [vs[1] for vs in validation_set]
+y = [vs[2] for vs in validation_set]
+model.(x)
+accuracy.(x, y)
+mean(accuracy.(x, y))
+
+mean([accuracy(x, y) for (x, y) in validation_set])
+
+model(tmp[1])
+tmp[1]
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
 opt = ADAM(0.001)
@@ -123,7 +124,7 @@ last_improvement = 0
     end
 
     # Calculate accuracy:
-    acc = accuracy(validation_set...) #splat separating tuple into x and y
+    acc = mean([accuracy(x, y) for (x, y) in validation_set])
     @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
 
     # If our accuracy is good enough, quit out.
