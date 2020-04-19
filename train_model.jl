@@ -1,4 +1,5 @@
-# include("dataloader.jl")
+cd(@__DIR__)
+
 include("preprocess.jl")
 include("validation_dataset.jl")
 include("minibatch.jl")
@@ -8,6 +9,7 @@ using Flux: onecold, crossentropy
 using Base.Iterators: repeated, partition
 using Printf, BSON
 using CUDAapi
+using Plots
 if has_cuda()
     @info "CUDA is on"
     import CuArrays
@@ -121,8 +123,8 @@ end
 
 
 #display the results
-pred_test_labels = Flux.onecold(model(validation_set[1]), 1:length(valid_maps))
-true_test_labels = Flux.onecold(validation_set[2], 1:length(valid_maps))
+pred_test_labels = model(validation_set[1]), 1:length(valid_maps)
+true_test_labels = validation_set[2], 1:length(valid_maps)
 acc = mean(pred_test_labels . == true_test_labels)
 cm = zeros(Int64, Stride, Stride)
 for i in 1:length(pred_test_labels)
@@ -132,12 +134,10 @@ end
 p2 = heatmap(cm, c=:dense, title = "Confusion Matrix, accuracy = "*string(acc), ylabel="True label", xlabel="Predicted label")
 
 
-
 #have a look
 @info "plotting"
-p1 = heatmap(Z[1], title="predicted")
-p2 = heatmap(model(W[1]), title="observed")
-p3 = scatter(Z[1], model(W[1]), leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
+p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted")
+p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed")
+p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
-
-cat()
+savefig("figures/model.png")
