@@ -62,7 +62,7 @@ anynan(x) = any(isnan.(x))
 function loss(x, y)
     x̂ = augment(x)
     ŷ = model(x̂)
-    return sum((y .- ŷ).^2)#./prod(size(x)) #divided by the actual value
+    return sum((y .- ŷ).^2)./prod(size(x)) #divided by the actual value
 end
 
 
@@ -98,8 +98,8 @@ last_improvement = 0
 
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
-        @info(" -> New best accuracy! Saving model out to mnist_conv.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "mnist_conv.bson") params=cpu.(params(model)) epoch_idx acc
+        @info(" -> New best accuracy! Saving model out to connectivity.bson")
+        BSON.@save joinpath(dirname(@__FILE__), "connectivity.bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
