@@ -14,10 +14,6 @@ using Printf, BSON
 #     CuArrays.allowscalar(false)
 # end
 
-#if non-minibatching
-# training_set = collect(zip(train_maps, train_connect))
-# validating_set = collect(zip(valid_maps, valid_connect))
-
 train_set
 validation_set
 
@@ -62,19 +58,6 @@ augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
 paramvec(model) = vcat(map(p->reshape(p, :), params(model))...)
 anynan(x) = any(isnan.(x))
 
-train_set
-x = train_set[1][1] #inputs
-y = train_set[1][2] #outputs
-ŷ = model(train_set[1][1]) #train model on inputs
-tmp = sum((y .- ŷ).^2)#, dims = (1,2))
-sum((y .- ŷ).^2)
-#summing the (32) losses of each image -> get same result
-sum(sum((y .- ŷ).^2, dims = (1,2)))
-
-y = collect(1:10)
-ŷ = collect(1:2:20)
-sum((y .- ŷ).^2)
-
 
 function loss(x, y)
     x̂ = augment(x)
@@ -83,28 +66,9 @@ function loss(x, y)
 end
 
 
-x = train_set[1][1]
-y = train_set[1][2]
-model(x)
-# Difference per image
-accuracy(x, y) = 1 - mean(sum((y .- model(x)).^2, dims = (1,2)))
-# Difference per pixel (same thing... if divide image/#pixels (81 = 9x9) get same accuracy)
+#Accuracy per pixel
 accuracy(x, y) = 1 - mean((y .- model(x)).^2) # (1 - mse) -> closer to 1 is better
-# accuracy(x, y) = mean(model(x) .== y)
 
-validation_set
-tmp = [validation_set...]
-
-x = [vs[1] for vs in validation_set] #input
-y = [vs[2] for vs in validation_set] #outputs
-model.(x) #run model on inputs
-accuracy.(x, y) #get accuracy
-mean(accuracy.(x, y)) #get the mean accuracy
-#one line it:
-mean([accuracy(x, y) for (x, y) in validation_set])
-
-model(tmp[1])
-tmp[1]
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
 opt = ADAM(0.001)
@@ -122,8 +86,8 @@ last_improvement = 0
         break
     end
 
-    # Calculate accuracy:
-    acc = mean([accuracy(x, y) for (x, y) in validation_set])
+    # Calculate accuracy of model to validation set:
+    acc = mean([accuracy(x, y) for (x, y) in validation_set]) #dividing validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
     @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
 
     # If our accuracy is good enough, quit out.
@@ -156,31 +120,18 @@ last_improvement = 0
 end
 
 
-# #display the results
-# pred_test_labels = Flux.onecold(model(validation_set[1]), 1:length(valid_maps))
-# true_test_labels = Flux.onecold(validation_set[2], 1:length(valid_maps))
-# acc = mean(pred_test_labels . == true_test_labels)
-# cm = zeros(Int64, Stride, Stride)
-# for i in 1:length(pred_test_labels)
-#     cm[pred_test_labels[i], true_test_labels[i]] += 1
-# end
-#
-# p2 = heatmap(cm, c=:dense, title = "Confusion Matrix, accuracy = "*string(acc), ylabel="True label", xlabel="Predicted label")
-
-
-#evaluate callback
-evalcb() = @show(L24Dloss(valid_maps, validation_set))
-
-cb = function()
-    accuracy() > 0.9 && Flux.stop()
+#display the results
+pred_test_labels = Flux.onecold(model(validation_set[1]), 1:length(valid_maps))
+true_test_labels = Flux.onecold(validation_set[2], 1:length(valid_maps))
+acc = mean(pred_test_labels . == true_test_labels)
+cm = zeros(Int64, Stride, Stride)
+for i in 1:length(pred_test_labels)
+    cm[pred_test_labels[i], true_test_labels[i]] += 1
 end
 
-epochs = 3
+p2 = heatmap(cm, c=:dense, title = "Confusion Matrix, accuracy = "*string(acc), ylabel="True label", xlabel="Predicted label")
 
-@info("Beginning training loop...")
-@time @elapsed for epoch in 1:epochs
-    Flux.train!(L24Dloss, params(model), train_set, opt, cb = Flux.throttle(evalcb, 5))
-end
+
 
 #have a look
 @info "plotting"
