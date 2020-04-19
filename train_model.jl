@@ -7,12 +7,12 @@ using Flux, Statistics
 using Flux: onecold, crossentropy
 using Base.Iterators: repeated, partition
 using Printf, BSON
-# using CUDAapi
-# if has_cuda()
-#     @info "CUDA is on"
-#     import CuArrays
-#     CuArrays.allowscalar(false)
-# end
+using CUDAapi
+if has_cuda()
+    @info "CUDA is on"
+    import CuArrays
+    CuArrays.allowscalar(false)
+end
 
 train_set
 validation_set
@@ -45,9 +45,9 @@ model[1:6](train_set[1][1]) #layer 6: 81x32
 model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
 
 # Load model and datasets onto GPU, if enabled
-# train_set = gpu.(train_set)
-# validation_set = gpu.(validation_set)
-# model = gpu(model)
+train_set = gpu.(train_set)
+validation_set = gpu.(validation_set)
+model = gpu(model)
 
 # Make sure our model is nicely precompiled before starting our training loop
 model(train_set[1][1])
