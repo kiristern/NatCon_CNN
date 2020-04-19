@@ -69,7 +69,7 @@ end
 
 
 #Accuracy per pixel
-accuracy(x, y) = 1 - mean((y .- model(x)).^2) # (1 - mse) -> closer to 1 is better
+accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is better
 
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
@@ -89,7 +89,7 @@ last_improvement = 0
     end
 
     # Calculate accuracy of model to validation set:
-    acc = mean([accuracy(x, y) for (x, y) in validation_set]) #dividing validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
+    acc = mean([accuracy(x, y) for (x, y) in validation_set]) #separating validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
     @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
 
     # If our accuracy is good enough, quit out.
@@ -122,22 +122,10 @@ last_improvement = 0
 end
 
 
-#display the results
-pred_test_labels = model(validation_set[1]), 1:length(valid_maps)
-true_test_labels = validation_set[2], 1:length(valid_maps)
-acc = mean(pred_test_labels . == true_test_labels)
-cm = zeros(Int64, Stride, Stride)
-for i in 1:length(pred_test_labels)
-    cm[pred_test_labels[i], true_test_labels[i]] += 1
-end
-
-p2 = heatmap(cm, c=:dense, title = "Confusion Matrix, accuracy = "*string(acc), ylabel="True label", xlabel="Predicted label")
-
-
 #have a look
 @info "plotting"
 p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted")
 p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed")
 p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
-savefig("figures/model.png")
+# savefig("figures/model.png")
