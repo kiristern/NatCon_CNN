@@ -30,7 +30,7 @@ train_set = [make_minibatch(train_maps, train_connect, i) for i in mb_idxs]
 
 
 droplast2 = rem(length(valid_maps), batch_size)
-mb_idxs2 = Iterators.partition(1:length(valid_maps)-droplast, batch_size)
+mb_idxs2 = Iterators.partition(1:length(valid_maps)-droplast2, batch_size)
 #prepare validation set as one giant minibatch
 validation_set = [make_minibatch(valid_maps, valid_connect, i) for i in mb_idxs2]
 
