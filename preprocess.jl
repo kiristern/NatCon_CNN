@@ -31,7 +31,7 @@ nan_to_0(Connectivity)
 #create Training dataset
 # Extract 150 random 28x28 resistance, origin, and connectivity layers
 Random.seed!(1234)
-Stride = 9
+Stride = 6
 maps = []
 connect = []
 
@@ -49,7 +49,7 @@ end
 
 #create Testing dataset
 Random.seed!(5678)
-Stride = 9
+Stride = 6
 test_maps = []
 test_connect = []
 

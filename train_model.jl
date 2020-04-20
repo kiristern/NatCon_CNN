@@ -75,10 +75,12 @@ accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is b
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
 opt = ADAM(0.001)
 
+# BSON.load("connectivity_relu.bson")
+
 @info("Beginning training loop...")
 best_acc = 0.0
 last_improvement = 0
-@time @elapsed for epoch_idx in 1:100
+@time @elapsed for epoch_idx in 1:500
     global best_acc, last_improvement
     # Train for a single epoch
     Flux.train!(loss, params(model), train_set, opt)
@@ -101,7 +103,7 @@ last_improvement = 0
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to connectivity.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "connectivity.bson") params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "6x6_relu.bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
@@ -128,4 +130,4 @@ p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted")
 p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed")
 p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
-# savefig("figures/model.png")
+ savefig("figures/6x6_relu.png")
