@@ -19,10 +19,11 @@ function make_minibatch(X, Y, idxs)
     end
     return (X_batch, Y_batch)
 end
-# The CNN only "sees" 32 images at each training cycle:
-batch_size = 32
+batch_size = 32 # The CNN only "sees" 32 images at each training cycle
+
+#subtract remainders to ensure all minibatches are the same length
 droplast = rem(length(train_maps), batch_size)
-mb_idxs = Iterators.partition(1:length(train_maps)-droplast, batch_size) #-31 to omit last non full minibatch
+mb_idxs = Iterators.partition(1:length(train_maps)-droplast, batch_size)
 #train set in the form of batches
 train_set = [make_minibatch(train_maps, train_connect, i) for i in mb_idxs]
 #train set in one-go: used to calculate accuracy with the train set

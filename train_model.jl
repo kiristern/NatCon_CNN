@@ -115,7 +115,7 @@ last_improvement = 0
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to connectivity.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "12x12_relu.bson") params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/36x36_relu.bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
@@ -142,4 +142,4 @@ p1 = heatmap(validation_set[1][2][:,:,1,2], title="predicted")
 p2 = heatmap(model(validation_set[1][1])[:,:,1,2], title="observed")
 p3 = scatter(validation_set[1][2][:,:,1,2], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
-savefig("figures/12x12_relu.png")
+savefig("figures/36x36_1h45_9633_80e.png")
