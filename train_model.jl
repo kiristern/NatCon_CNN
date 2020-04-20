@@ -19,6 +19,18 @@ end
 train_set
 validation_set
 
+m = Chain(
+    Conv((3,3), 2=>16, pad=(1,1), relu),
+    MaxPool((2,2)),
+    Conv((3,3), 16=>32, pad=(1,1), relu),
+    MaxPool((2,2))
+)
+
+ls = m[1:4](train_set[1][1])
+reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
+print("reshapeLayer dims: ", reshapeLayer)
+
+
 @info("Constructing model...")
 model = Chain(
     #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
@@ -38,16 +50,13 @@ model = Chain(
 )
 
 #View layer outputs
-# model[1](train_set[1][1]) #layer 1: 9x9x16x32
-# model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
-# model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
-# model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
-ls = model[1:4](train_set[1][1])
-reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
-print("reshapeLayer dims: ", reshapeLayer)
-# model[1:5](train_set[1][1]) #layer 5: 128x32
-# model[1:6](train_set[1][1]) #layer 6: 81x32
-# model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
+model[1](train_set[1][1]) #layer 1: 9x9x16x32
+model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
+model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
+model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
+model[1:5](train_set[1][1]) #layer 5: 128x32
+model[1:6](train_set[1][1]) #layer 6: 81x32
+model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set)
@@ -106,7 +115,7 @@ last_improvement = 0
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to connectivity.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "6x6_relu.bson") params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "12x12_relu.bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
@@ -129,8 +138,8 @@ end
 
 #have a look
 @info "plotting"
-p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted")
-p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed")
-p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
+p1 = heatmap(validation_set[1][2][:,:,1,2], title="predicted")
+p2 = heatmap(model(validation_set[1][1])[:,:,1,2], title="observed")
+p3 = scatter(validation_set[1][2][:,:,1,2], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
- savefig("figures/6x6_relu.png")
+savefig("figures/12x12_relu.png")
