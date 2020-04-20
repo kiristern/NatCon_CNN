@@ -1,5 +1,4 @@
 using CSV
-using Flux #v0.10.4
 using Random
 
 cd(@__DIR__)
