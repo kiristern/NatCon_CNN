@@ -5,48 +5,23 @@ output = fill(ex_output, 5)
 ex_input = Array{Float32}(undef, 3, 3, 2)
 input = fill(ex_input, 5)
 
-function make_minibatch(X, Y, idxs)
-    X_batch = Array{Float32}(undef, size(X[1])..., length(idxs))
-    for i in 1:length(idxs)
-        X_batch[:, :, :, i] = Float32.(X[idxs[i]])
-    end
-    Y_batch = Array{Float32}(undef, size(Y[1])..., 1, length(idxs))
-    for i in 1:length(idxs)
-        Y_batch[:, :, :, i] = Float32.(Y[idxs[i]])
-    end
-    return (X_batch, Y_batch)
-end
 
-batch_size = 32
-mb_idxs = Iterators.partition(1:length(input), batch_size)
-#train set in the form of batches
-ex_train_set = [make_minibatch(input, output, i) for i in mb_idxs]
+randn(64,64,1,1) |>
+    Conv((3,3), 1=>8, relu, stride=2, pad=1) |>
+    ConvTranspose((3,3), 8=>1, relu, stride=2, pad=1) #|> size
+# Due to striding, losing pixels on the borders (the filters can't reach them) on the input -> returns (63, 63, 1, 1) instead of (64,64,1,1)
 
-ex_validation_set = make_minibatch(input, output, 1:length(input))
+#Solve with unequal padding
+randn(64,64,1,1) |>
+    Conv((3,3), 1=>8, leakyrelu, stride=2, pad=(0,1,0,1)) |>
+    ConvTranspose((3,3), 8=>1, leakyrelu, stride=2, pad=(0,1,0,1)) #|> size
+# (64,64,1,1)
 
-
-model = Chain(
-    Conv((3,3), 2=>16, pad=(1,1), relu),
-    MaxPool((2,2)),
-
-    Conv((3,3), 16=>32, pad=(1,1), relu),
-    MaxPool((2,2)),
-
-    Conv((3,3), 32=>32, pad=(1,1), relu),
-    MaxPool((2,2)),
-
-    # #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, :, size(x, 4)),
-     Dense(32, 10),
-    # want final output dims 1x32
-     Dense(10, 1, σ)
-
-    #softmax to get nice probabilities
-    #softmax,
+#my data:
+convT_ex = randn(9,9,1,1)
+convTmodel = Chain(
+    Conv((3,3), 1=>8, leakyrelu, stride=2, pad=(1,1)),
+    ConvTranspose((3,3), 8=>1, leakyrelu, stride=2, pad=(1,1))
 )
 
-function loss(x, y)
-    x̂ = augment(x)
-    ŷ = model(x̂)
-    return crossentropy(ŷ, y) #TODO ensure input and output are same dimensions!!
-end
+convTmodel(convT_ex) #no loss of pixels because filter(3x3) and image is 9x9
