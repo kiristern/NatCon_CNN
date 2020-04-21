@@ -1,3 +1,17 @@
+#=
+This script loads the original CSV datafiles and returns m nxn random samples for training and testing sets
+
+Input:
+  resistance.csv
+  origin.csv
+  connectivity.csv
+
+Output:
+  maps: x_train
+  connect: y_train
+  test_maps: x_test
+  test_connect: y_test
+=#
 using CSV
 using Random
 
@@ -28,10 +42,10 @@ nan_to_0(Origin)
 nan_to_0(Connectivity)
 
 #create Training dataset
-# Extract 150 random 28x28 resistance, origin, and connectivity layers
+# Extract 150 random 9x9 resistance, origin, and connectivity layers
 Random.seed!(1234)
-Stride = 6
-desired = 36
+Stride = 9
+desired = 9
 maps = []
 connect = []
 

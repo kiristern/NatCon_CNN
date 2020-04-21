@@ -1,5 +1,15 @@
 #=
 Create a custom validation set by sampling from the training dataset
+
+Input:
+  maps: nxnx2
+  connect: nxn
+
+Output:
+  train_maps: nxnx2
+  train_connect: nxn
+  valid_maps: nxnx2
+  valid_connect: nxn
 =#
 
 # include("preprocess.jl")

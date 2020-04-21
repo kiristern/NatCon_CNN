@@ -1,3 +1,19 @@
+#=
+
+Bundle images together with labels and group into minibatches
+
+Input:
+    train_maps: n x n x 2
+    train_connect: n x n
+    valid_maps: n x n x 2
+    valid_connect: n x n
+
+Output:
+    train_set: n x n x 2 x batch_size
+    validation_set: n x n x 1 x batch_size
+
+=#
+
 # include("preprocess.jl")
 # include("validation_dataset.jl")
 
@@ -6,7 +22,6 @@ train_connect
 valid_maps
 valid_connect
 
-#bundle images together with labels and group into minibatches
 function make_minibatch(X, Y, idxs)
     X_batch = Array{Float32}(undef, size(X[1])..., length(idxs))
     for i in 1:length(idxs)
@@ -26,8 +41,6 @@ droplast = rem(length(train_maps), batch_size)
 mb_idxs = Iterators.partition(1:length(train_maps)-droplast, batch_size)
 #train set in the form of batches
 train_set = [make_minibatch(train_maps, train_connect, i) for i in mb_idxs]
-#train set in one-go: used to calculate accuracy with the train set
-# train_set_full = make_minibatch(train_maps, train_connect, 1:length(train_maps))
 
 
 droplast2 = rem(length(valid_maps), batch_size)

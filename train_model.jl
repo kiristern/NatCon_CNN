@@ -1,3 +1,9 @@
+#=
+
+Create and train a model
+
+=#
+
 cd(@__DIR__)
 
 include("preprocess.jl")
