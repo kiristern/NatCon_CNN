@@ -28,10 +28,12 @@ m = Chain(
 
 ls = m[1:4](train_set[1][1])
 reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
-print("reshapeLayer dims: ", reshapeLayer)
 
-
-@info("Constructing model...")
+begin
+    print("##########################")
+    print("## Constructing model...##")
+    print("##########################")
+end
 model = Chain(
     #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
     Conv((3,3), 2=>16, pad=(1,1), relu),
@@ -88,11 +90,14 @@ accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is b
 opt = ADAM(0.001)
 
 # BSON.load("connectivity_relu.bson")
-
-@info("Beginning training loop...")
+begin
+    print("#################################")
+    print("## Beginning training loop...  ##")
+    print("#################################")
+end
 best_acc = 0.0
 last_improvement = 0
-@time @elapsed for epoch_idx in 1:500
+run = @time @elapsed for epoch_idx in 1:5
     global best_acc, last_improvement
     # Train for a single epoch
     Flux.train!(loss, params(model), train_set, opt)
@@ -115,7 +120,7 @@ last_improvement = 0
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to connectivity.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "BSON/36x36_relu.bson") params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/$(Stride)x$(Stride).bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
@@ -135,11 +140,14 @@ last_improvement = 0
     end
 end
 
-
 #have a look
-@info "plotting"
+begin
+    print("##################")
+    print("## Plotting...  ##")
+    print("##################")
+end
 p1 = heatmap(validation_set[1][2][:,:,1,2], title="predicted")
 p2 = heatmap(model(validation_set[1][1])[:,:,1,2], title="observed")
 p3 = scatter(validation_set[1][2][:,:,1,2], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
-savefig("figures/36x36_1h45_9633_80e.png")
+savefig("figures/$(Stride)x$(Stride)_$(run)sec_$(best_acc*100)%.png")
