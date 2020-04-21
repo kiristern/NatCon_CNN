@@ -20,37 +20,23 @@ train_set
 validation_set
 
 m = Chain(
-    Conv((3,3), 2=>16, pad=(1,1), relu),
-    MaxPool((2,2)),
-    Conv((3,3), 16=>32, pad=(1,1), relu),
-    MaxPool((2,2))
-)
+    ConvTranspose((3,3), 1=>8, pad=(1,1), leakyrelu),
+    ConvTranspose((3,3), 8=>16, pad=(1,1), leakyrelu),
+    ConvTranspose((3,3), 16=>36, pad=(1,1), leakyrelu)
+    )
 
-ls = m[1:4](train_set[1][1])
+ls = m[1:3](train_set[1][2])
 reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
-print("reshapeLayer dims: ", reshapeLayer)
-
 
 @info("Constructing model...")
 model = Chain(
-    #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
-    ConvTranspose((3,3), 2=>16, pad=(1,1), relu),
-    MaxPool((2,2)),
-    #2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
-    Conv((3,3), 16=>32, pad=(1,1), relu),
-    MaxPool((2,2)),
-
-    #flatten from 3D tensor to a 2D one, suitable for dense layer and training
+    ConvTranspose((3,3), 2=>8, pad=(1,1), leakyrelu),
+    ConvTranspose((3,3), 8=>16, pad=(1,1), leakyrelu),
+    ConvTranspose((3,3), 16=>36, pad=(1,1), leakyrelu),
     x -> reshape(x, (reshapeLayer, batch_size)),
-
-     Dense(reshapeLayer, Stride*Stride),
-
-    #reshape to match output dimensions
-    x -> reshape(x, (Stride, Stride, 1, batch_size))
-
-    #expand!
-    ConvTranspose((3,3), )
-
+    Dense(reshapeLayer, desired*desired),
+    x -> reshape(x, (desired, desired, 1, batch_size))
+    )
 #View layer outputs
 model[1](train_set[1][1]) #layer 1: 9x9x16x32
 model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
@@ -58,7 +44,6 @@ model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
 model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
 model[1:5](train_set[1][1]) #layer 5: 128x32
 model[1:6](train_set[1][1]) #layer 6: 81x32
-model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set)
