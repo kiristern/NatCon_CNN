@@ -6,6 +6,7 @@ Output:
     one 27x27 image; aka, 3 (9x9) by 3 (9x9) images
 
 =#
+cd(@__DIR__)
 
 include("preprocess.jl")
 include("validation_dataset.jl")
@@ -13,9 +14,6 @@ include("minibatch.jl")
 include("train_model.jl")
 
 using StatsBase
-
-maps
-connect
 
 #select new coordinates for obtaining n 27x27 samples
 stride = 27
@@ -26,24 +24,61 @@ Random.seed!(1234)
 cart_idx = sample(findall(Resistance .> 0), samples)
 coordinates = Tuple.(cart_idx)
 
-#obtain 27x27 imgs from sample points
-res_input = []
-test_output = []
-for i in coordinates, j in coordinates
-  #taking groups of matrices of dimensions stridexstride
-  x_res = Resistance[first(i):(first(i)+stride-1), last(j):(last(j)+stride-1)]
-  x_or = Origin[first(i):(first(i)+stride-1), last(j):(last(j)+stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
-  y = Connectivity[first(i):(first(i)+stride-1),last(j):(last(j)+stride-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
-    push!(test_input, x)
-    push!(test_output, y)
-  end
+#create range around each sample point
+range = []
+for i in cart_idx
+  a, b = Tuple(i)
+  c = [a-10:a+stride+9,b-10:b+stride+9]
+  push!(range, c)
 end
 
-#get indices of each sample point
-indices_x = []
-for i in test_input
+#get all indices in range
+# indices_x = []
+# indices_y = []
+# for i in 1:length(range)
+#   u = collect(range[i][1])
+#   w = collect(range[i][2])
+#   push!(indices_x, u)
+#   push!(indices_y, w)
+# end
+# range_idx = zip(indices_x, indices_y)
+
+#make 27x27 layers from coordinates
+res_layer = []
+ori_layer = []
+con_layer = []
+for i in coordinates
+  x1 = Resistance[first(i):(first(i)+stride-1), last(i):(last(i)+stride-1)]
+  x2 = Origin[first(i):(first(i)+stride-1), last(i):(last(i)+stride-1)]
+  x3 = Connectivity[first(i):(first(i)+stride-1), last(i):(last(i)+stride-1)]
+  push!(res_layer, x1)
+  push!(ori_layer, x2)
+  push!(con_layer, x3)
+end
+
+#make 9x9 layers from coordinates
+
+
+
+
+
+
+
+
+
+
+
+
+
+#make a function get indices of each sample point
+indices = []
+CartesianIndices(res[])
+findall(x->x==2, res[1])
+
+for i in res, j in res
+  idx = CartesianIndices(res[i][j])
+  push!(indices, idx)
+end
 
 #from 27x27 samples, generate nine, 9x9 subsamples
 subsamp_in = []
