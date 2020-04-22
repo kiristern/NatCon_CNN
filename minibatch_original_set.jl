@@ -22,18 +22,6 @@ train_connect
 valid_maps
 valid_connect
 
-function make_minibatch(X, Y, idxs)
-    X_batch = Array{Float32}(undef, size(X[1])..., length(idxs))
-    for i in 1:length(idxs)
-        X_batch[:, :, :, i] = Float32.(X[idxs[i]])
-    end
-    #transform (9x9) to (9x9x1x#batch)
-    Y_batch = Array{Float32}(undef, size(Y[1])...,1, length(idxs))
-    for i in 1:length(idxs)
-        Y_batch[:, :, :, i] = Float32.(Y[idxs[i]])
-    end
-    return (X_batch, Y_batch)
-end
 batch_size = 32 # The CNN only "sees" 32 images at each training cycle
 
 #subtract remainders to ensure all minibatches are the same length

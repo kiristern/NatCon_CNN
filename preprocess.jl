@@ -12,6 +12,7 @@ Output:
   test_maps: x_test
   test_connect: y_test
 =#
+
 using CSV
 using Random
 
@@ -27,15 +28,6 @@ Connectivity = convert(Matrix, connectivity)
 
 #remove last row in Resistance to get same size as Origin and Connectivity
 Resistance = Resistance[1:end-1, :]
-
-#change NaN to 0
-function nan_to_0(s)
-  for j in 1:length(s)
-    if isnan(s[j])
-      s[j] = 0
-    end
-  end
-end
 
 nan_to_0(Resistance)
 nan_to_0(Origin)

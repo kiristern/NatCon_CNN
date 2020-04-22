@@ -9,6 +9,7 @@ cd(@__DIR__)
 include("preprocess.jl")
 include("validation_dataset.jl")
 include("minibatch.jl")
+include("functions.jl")
 
 using Flux, Statistics
 using Flux: onecold, crossentropy
@@ -74,22 +75,6 @@ model = gpu(model)
 # Make sure our model is nicely precompiled before starting our training loop
 model(train_set[1][1])
 model(train_set[1][1])[:, :, 1, 32] #see last output
-
-# Augment `x` a little bit here, adding in random noise.
-augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
-paramvec(model) = vcat(map(p->reshape(p, :), params(model))...)
-anynan(x) = any(isnan.(x))
-
-
-function loss(x, y)
-    x̂ = augment(x)
-    ŷ = model(x̂)
-    return sum((y .- ŷ).^2)./prod(size(x)) #divided by the actual value
-end
-
-
-#Accuracy per pixel
-accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is better
 
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
