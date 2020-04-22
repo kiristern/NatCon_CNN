@@ -126,7 +126,7 @@ run = @time @elapsed for epoch_idx in 1:5
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to connectivity.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "BSON/$(Stride)x$(Stride).bson") params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/overwrite_$(Stride)x$(Stride).bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
