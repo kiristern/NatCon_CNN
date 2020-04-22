@@ -20,12 +20,12 @@ train_set
 validation_set
 
 m = Chain(
-    ConvTranspose((3,3), 1=>8, pad=(1,1), leakyrelu),
+    ConvTranspose((3,3), 2=>8, pad=(1,1), leakyrelu),
     ConvTranspose((3,3), 8=>16, pad=(1,1), leakyrelu),
     ConvTranspose((3,3), 16=>36, pad=(1,1), leakyrelu)
     )
 
-ls = m[1:3](train_set[1][2])
+ls = m[1:3](train_set[1][1])
 reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
 
 @info("Constructing model...")
@@ -76,7 +76,9 @@ opt = ADAM(0.001)
 
 # BSON.load("connectivity_relu.bson")
 
-@info("Beginning training loop...")
+@info("######################
+    Beginning training loop...
+    ########################")
 best_acc = 0.0
 last_improvement = 0
 @time @elapsed for epoch_idx in 1:500
@@ -102,7 +104,7 @@ last_improvement = 0
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to connectivity.bson")
-        BSON.@save joinpath(dirname(@__FILE__), "BSON/36x36_relu.bson") params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/9to36.bson") params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
@@ -122,11 +124,11 @@ last_improvement = 0
     end
 end
 
-
+BSON.load("BSON/connectivity_relu.bson")
 #have a look
 @info "plotting"
 p1 = heatmap(validation_set[1][2][:,:,1,2], title="predicted")
 p2 = heatmap(model(validation_set[1][1])[:,:,1,2], title="observed")
 p3 = scatter(validation_set[1][2][:,:,1,2], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(p1,p2, p3)
-savefig("figures/36x36_1h45_9633_80e.png")
+savefig("figures/9to36_54min_9376_34e.png")
