@@ -8,10 +8,10 @@ Output:
 =#
 cd(@__DIR__)
 
-include("preprocess.jl")
-include("validation_dataset.jl")
-include("minibatch.jl")
-include("train_model.jl")
+@time include("preprocess.jl")
+@time include("validation_dataset.jl")
+@time include("minibatch.jl")
+@time include("train_model.jl")
 
 using StatsBase
 
@@ -19,47 +19,53 @@ using StatsBase
 stride = 27
 samples = 50
 
+#TODO try to sample between these values (to avoid going out of bounds)
+lx= length(Resistance[:,1])-stride
+ly = length(Resistance[1,:])-stride
+
 Random.seed!(1234)
 #select coordinates where there is data
-cart_idx = sample(findall(Resistance .> 0), samples)
+cart_idx = sample(findall(Connectivity .> 0), samples)
 coordinates = Tuple.(cart_idx)
 
 #create range around each sample point
 range = []
 for i in cart_idx
   a, b = Tuple(i)
-  c = [a-10:a+stride+9,b-10:b+stride+9]
+  c = [a:a+stride-1,b:b+stride-1]
   push!(range, c)
 end
 
-#get all indices in range
-# indices_x = []
-# indices_y = []
-# for i in 1:length(range)
-#   u = collect(range[i][1])
-#   w = collect(range[i][2])
-#   push!(indices_x, u)
-#   push!(indices_y, w)
-# end
-# range_idx = zip(indices_x, indices_y)
 
-#make 27x27 layers from coordinates
-res_layer = []
-ori_layer = []
-con_layer = []
+#make 27x27 imgs from coordinates
+validation_maps = []
+validation_connect = []
 for i in coordinates
-  x1 = Resistance[first(i):(first(i)+stride-1), last(i):(last(i)+stride-1)]
-  x2 = Origin[first(i):(first(i)+stride-1), last(i):(last(i)+stride-1)]
-  x3 = Connectivity[first(i):(first(i)+stride-1), last(i):(last(i)+stride-1)]
-  push!(res_layer, x1)
-  push!(ori_layer, x2)
-  push!(con_layer, x3)
+  x_resistance = Resistance[first(i):first(i)+stride-1,last(i):last(i)+stride-1]
+  x_origin = Origin[first(i):first(i)+stride-1,last(i):last(i)+stride-1]
+  x = cat(x_resistance, x_origin, dims=3) #concatenate resistance and origin layers
+  y = Connectivity[first(i):first(i)+stride-1,last(i):last(i)+stride-1] #matrix we want to predict
+  if minimum(y) > 0 #predict only when there is connectivity
+    push!(validation_maps, x)
+    push!(validation_connect, y)
+  end
 end
 
-#make 9x9 layers from coordinates
+[first(range[1][1]):Stride:last(range[1][1])+1]
 
+#get every single index in samples
+x_indices = []
+y_indices = []
+for i in 1:length(range)
+  x_idx = collect(range[i][1])
+  y_idx = collect(range[i][2])
+  push!(x_indices, x_idx...)
+  push!(y_indices, y_idx...)
+end
 
-
+#get the first coordinate for each smaller sample
+x_idxes = x_indices[1:Stride:end]
+y_idxes = y_indices[1:Stride:end]
 
 
 
