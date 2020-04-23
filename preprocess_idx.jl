@@ -12,12 +12,8 @@ Output:
 =#
 cd(@__DIR__)
 
+@time include("functions.jl")
 @time include("preprocess.jl")
-# @time include("validation_dataset.jl")
-# @time include("minibatch.jl")
-# @time include("train_model.jl")
-
-using StatsBase
 
 #select new coordinates for obtaining n 27x27 samples
 stride = 27
