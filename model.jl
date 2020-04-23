@@ -74,7 +74,7 @@ reshapeLayer2 = size(ls2,1)*size(ls2,2)*size(ls2,3)
 
 begin
     print("##########################")
-    print("## Constructing model...##")
+    print("## Constructing model 2...##")
     print("##########################")
 end
 model = Chain(
