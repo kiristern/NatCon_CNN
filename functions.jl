@@ -74,3 +74,14 @@ end
 
 #Get accuracy per pixel (between true and predicted value)
 accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is better
+
+#Needed to update model
+m = Chain(
+    Conv((3,3), 2=>16, pad=(1,1), relu),
+    MaxPool((2,2)),
+    Conv((3,3), 16=>32, pad=(1,1), relu),
+    MaxPool((2,2))
+)
+
+ls = m[1:4](train_set[1][1])
+reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
