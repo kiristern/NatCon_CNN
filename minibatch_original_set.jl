@@ -52,3 +52,22 @@ size(train_set[1][2]) # 9x9x1x32
 ######
 # Second run
 #####
+
+train_maps2
+train_connect2
+valid_maps2
+valid_connect2
+
+batch_size2 = 32 # The CNN only "sees" 32 images at each training cycle
+
+#subtract remainders to ensure all minibatches are the same length
+droplast2 = rem(length(train_maps2), batch_size2)
+mb_idxs2 = Iterators.partition(1:length(train_maps2)-droplast2, batch_size2)
+#train set in the form of batches
+train_set2 = [make_minibatch(train_maps2, train_connect2, i) for i in mb_idxs2]
+
+
+droplast2_2 = rem(length(valid_maps2), batch_size2)
+mb_idxs2_2 = Iterators.partition(1:length(valid_maps2)-droplast2_2, batch_size2)
+#prepare validation set as one giant minibatch
+validation_set2 = [make_minibatch(valid_maps2, valid_connect2, i) for i in mb_idxs2_2]
