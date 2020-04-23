@@ -12,6 +12,7 @@ Output:
 =#
 cd(@__DIR__)
 
+@time include("libraries.jl")
 @time include("functions.jl")
 @time include("preprocess.jl")
 
@@ -67,20 +68,20 @@ x_idxes = x_indices[1:Stride:end]
 y_idxes = y_indices[1:Stride:end]
 
 #create 9x9 samples
-maps_9x9 = []
-connect_9x9 = []
+maps9x9 = []
+connect9x9 = []
 for i in x_idxes, j in y_idxes
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
   x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
   y = Connectivity[i:(i+desired-1),j:(j+desired-1)] #matrix we want to predict
   if minimum(y) > 0 #predict only when there is connectivity
-    push!(train_9x9_maps, x)
-    push!(train_9x9_connect, y)
+    push!(maps9x9, x)
+    push!(connect9x9, y)
   end
 end
 
-maps_9x9
-connect_9x9
+maps9x9
+connect9x9
 validation_maps
 validation_connect

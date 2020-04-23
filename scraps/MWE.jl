@@ -7,8 +7,8 @@ input = fill(ex_input, 5)
 
 
 randn(64,64,1,1) |>
-    Conv((3,3), 1=>8, relu, stride=2, pad=1) |>
-    ConvTranspose((3,3), 8=>1, relu, stride=2, pad=1) #|> size
+    Conv((3,3), 1=>8, relu, stride=2, pad=1) #|>
+    #ConvTranspose((3,3), 8=>1, relu, stride=2, pad=1) #|> size
 # Due to striding, losing pixels on the borders (the filters can't reach them) on the input -> returns (63, 63, 1, 1) instead of (64,64,1,1)
 
 #Solve with unequal padding
@@ -25,3 +25,7 @@ convTmodel = Chain(
 )
 
 convTmodel(convT_ex) #no loss of pixels because filter(3x3) and image is 9x9
+
+
+A = rand(1:3, 3, 3, 3)
+findall(x->x==2, A)
