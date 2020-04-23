@@ -13,9 +13,9 @@ Output:
 cd(@__DIR__)
 
 @time include("preprocess.jl")
-@time include("validation_dataset.jl")
-@time include("minibatch.jl")
-@time include("train_model.jl")
+# @time include("validation_dataset.jl")
+# @time include("minibatch.jl")
+# @time include("train_model.jl")
 
 using StatsBase
 
@@ -71,8 +71,8 @@ x_idxes = x_indices[1:Stride:end]
 y_idxes = y_indices[1:Stride:end]
 
 #create 9x9 samples
-train_9x9_maps = []
-train_9x9_connect = []
+maps_9x9 = []
+connect_9x9 = []
 for i in x_idxes, j in y_idxes
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
@@ -84,7 +84,7 @@ for i in x_idxes, j in y_idxes
   end
 end
 
-train_9x9_maps
-train_9x9_connect
+maps_9x9
+connect_9x9
 validation_maps
 validation_connect

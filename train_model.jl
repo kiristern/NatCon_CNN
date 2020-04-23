@@ -5,23 +5,12 @@ Create and train a model
 =#
 
 cd(@__DIR__)
-
+include("libraries.jl")
+include("functions.jl")
 include("preprocess.jl")
 include("validation_dataset.jl")
 include("minibatch.jl")
-include("functions.jl")
 
-using Flux, Statistics
-using Flux: onecold, crossentropy
-using Base.Iterators: repeated, partition
-using Printf, BSON
-using CUDAapi
-using Plots
-if has_cuda()
-    @info "CUDA is on"
-    import CuArrays
-    CuArrays.allowscalar(false)
-end
 
 train_set
 validation_set

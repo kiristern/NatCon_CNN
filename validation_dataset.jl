@@ -12,11 +12,22 @@ Output:
   valid_connect: nxn
 =#
 
+# include("functions.jl")
 # include("preprocess.jl")
-include("functions.jl")
 
+
+######
+# First run
+######
 maps
 connect
 
 Random.seed!(1234)
 train_maps, train_connect, valid_maps, valid_connect = partition_dataset(maps, connect)
+
+
+########
+# Second run
+########
+train_9x9_maps
+train_9x9_connect

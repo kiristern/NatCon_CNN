@@ -14,8 +14,14 @@ Output:
 
 =#
 
+# include("libraries.jl")
+# include("functions.jl")
 # include("preprocess.jl")
 # include("validation_dataset.jl")
+
+#####
+# First run
+#####
 
 train_maps
 train_connect
@@ -41,3 +47,8 @@ typeof(train_set) #tuple of 4D X_training data and 4D Y_labels
 #Check dimensions: width x height x channels x #batches
 size(train_set[1][1]) # 9x9x2x32
 size(train_set[1][2]) # 9x9x1x32
+
+
+######
+# Second run
+#####

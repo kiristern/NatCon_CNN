@@ -12,10 +12,8 @@ Output:
   test_maps: x_test
   test_connect: y_test
 =#
-
-using CSV
-using Random
-
+include("libraries.jl")
+include("functions.jl")
 cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
