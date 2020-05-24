@@ -4,13 +4,13 @@ Create and train a model
 
 =#
 
-cd(@__DIR__)
-include("libraries.jl")
-include("functions.jl")
-include("preprocess.jl")
-include("validation_dataset.jl")
-include("minibatch.jl")
-include("model.jl")
+# cd(@__DIR__)
+# include("libraries.jl")
+# include("functions.jl")
+# include("preprocess.jl")
+# include("validation_dataset.jl")
+# include("minibatch.jl")
+# include("model.jl")
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set)
@@ -33,7 +33,7 @@ begin
 end
 best_acc = 0.0
 last_improvement = 0
-run = @time @elapsed for epoch_idx in 1:5
+run = @time @elapsed for epoch_idx in 1:200
     global best_acc, last_improvement
     # Train for a single epoch
     Flux.train!(loss, params(model), train_set, opt)

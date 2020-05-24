@@ -10,11 +10,13 @@ Output:
   validation_connect: 27x72
 
 =#
-cd(@__DIR__)
 
-@time include("libraries.jl")
-@time include("functions.jl")
-@time include("preprocess.jl")
+
+# cd(@__DIR__)
+#
+# @time include("libraries.jl")
+# @time include("functions.jl")
+# @time include("preprocess.jl")
 
 #select new coordinates for obtaining n 27x27 samples
 stride = 27

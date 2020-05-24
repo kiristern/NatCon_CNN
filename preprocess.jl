@@ -12,9 +12,11 @@ Output:
   test_maps: x_test
   test_connect: y_test
 =#
-include("libraries.jl")
-include("functions.jl")
-cd(@__DIR__)
+
+
+# include("libraries.jl")
+# include("functions.jl")
+# cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
 resistance = CSV.read("data/resistance.csv")
