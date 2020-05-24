@@ -75,15 +75,3 @@ run = @time @elapsed for epoch_idx in 1:200
         break
     end
 end
-
-#have a look
-begin
-    print("##################")
-    print("## Plotting...  ##")
-    print("##################")
-end
-p1 = heatmap(validation_set[1][2][:,:,1,2], title="predicted")
-p2 = heatmap(model(validation_set[1][1])[:,:,1,2], title="observed")
-p3 = scatter(validation_set[1][2][:,:,1,2], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
-plot(p1,p2, p3)
-savefig("figures/$(Stride)x$(Stride)_$(run)sec_$(best_acc*100)%.png")
