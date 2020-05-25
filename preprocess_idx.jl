@@ -4,10 +4,10 @@ Get a 27x27 sample from original data maps and, using the trained (working) mode
 
 n 27x27 images; aka, groups of 3 (9x9) by 3 (9x9) images
 Output:
-  train_9x9_maps: 9x9x2
-  train_9x9_connect: 9x9x2
-  validation_maps : 27x27x2
-  validation_connect: 27x72
+  maps9x9: vector of n elements of dims 9x9x2
+  connect9x9: vector of n elements of dims 9x9
+  validation_maps: vector of m elements of dims 27x27x2
+  validation_connect: vector of m elements of dims 27x27
 
 =#
 
@@ -31,7 +31,7 @@ Random.seed!(1234)
 cart_idx = sample(findall(Connectivity .> 0), samples)
 coordinates = Tuple.(cart_idx)
 
-#create range around each sample point
+#create range around each sample index
 range = []
 for i in cart_idx
   a, b = Tuple(i)
@@ -53,7 +53,8 @@ for i in coordinates
     push!(validation_connect, y)
   end
 end
-
+validation_maps
+validation_connect
 
 #get every single index in samples
 x_indices = []
@@ -64,8 +65,11 @@ for i in 1:length(range)
   push!(x_indices, x_idx...)
   push!(y_indices, y_idx...)
 end
+x_indices
+y_indices
 
-#get the first coordinate for each smaller sample
+
+#get the first coordinate for each smaller (9x9) sample
 x_idxes = x_indices[1:Stride:end]
 y_idxes = y_indices[1:Stride:end]
 

@@ -4,10 +4,6 @@
 # include("validation_dataset.jl")
 # include("minibatch.jl")
 
-####
-# First run
-####
-
 train_set
 validation_set
 
