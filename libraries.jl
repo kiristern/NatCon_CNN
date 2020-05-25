@@ -5,6 +5,7 @@ using Flux, Statistics
 using Flux: onecold, crossentropy
 using Base.Iterators: repeated, partition
 using Printf, BSON
+using BSON: @load, @save
 using CUDAapi
 using Plots
 if has_cuda()
