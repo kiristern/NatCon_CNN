@@ -1,3 +1,4 @@
 figures/
-BSON/
+BSON/*
+!BSON/overwrite_9x9.bson
 flux_doc.jl
