@@ -29,3 +29,37 @@ convTmodel(convT_ex) #no loss of pixels because filter(3x3) and image is 9x9
 
 A = rand(1:3, 3, 3, 3)
 findall(x->x==2, A)
+
+
+
+
+### stitch
+S = []
+for i in 1:8
+    a = [1 2; 3 4] .+ (4*(i-1))
+    push!(S, a)
+end
+S
+
+thing1 = vcat((hcat(S[1], S[2])), (hcat(S[3], S[4])))
+thing2 = vcat((hcat(S[5], S[6])), (hcat(S[7], S[8])))
+
+things = []
+n = Int(length(S)/4)
+for i in 1:n
+    thing = vcat((hcat(S[i], S[i+1])), (hcat(S[i+2], S[i+3])))
+    push!(things, thing)
+end
+things
+things[1]
+things[2]
+
+things = [vcat(hcat(S[4i+1], S[4i+2]), hcat(S[4i+3], S[4i+4])) for i in 0:n-1]
+
+
+P = []
+for i in 1:9
+    b = [1 2 3; 3 4 6; 7 8 9] .+ (9*(i-1))
+    push!(P, b)
+end
+P
