@@ -100,8 +100,8 @@ end
 maps9x9
 connect9x9
 
-validate_map27x27
 validate_connect27x27
+heatmap(validate_connect27x27[1])
 
 ### minibatch ###
 #subtract remainders to ensure all minibatches are the same length
@@ -109,8 +109,48 @@ droplast9x9 = rem(length(maps9x9), batch_size)
 mb_idxs9x9 = Iterators.partition(1:length(maps9x9)-droplast9x9, batch_size)
 #train set in the form of batches
 nine_nine = [make_minibatch(maps9x9, connect9x9, i) for i in mb_idxs]
-
 nine_nine
 
 
+
 #TODO: verify connectivity values are the same
+truem1_2 = connect9x9[1]
+truem2_2 = connect9x9[2]
+truem3_2 = connect9x9[3]
+truerow1_2 = hcat(truem1_2,truem2_2,truem3_2)
+
+truem4_2 = connect9x9[4]
+truem5_2 = connect9x9[5]
+truem6_2 = connect9x9[6]
+truerow2_2 = hcat(truem4_2,truem5_2,truem6_2)
+
+truem7_2 = connect9x9[7]
+truem8_2 = connect9x9[8]
+truem9_2 = connect9x9[9]
+truerow3_2 = hcat(truem7_2,truem8_2,truem9_2)
+
+truemap27x27_2 = vcat(truerow1_2, truerow2_2, truerow3_2)
+truemap1_2 = heatmap(truemap27x27_2)
+
+plot(heatmap(validate_connect27x27[1]), truemap1_2)
+
+#compare minibatching
+truem1_3 = nine_nine[1][2][:,:,1,1]
+truem2_3 = nine_nine[1][2][:,:,1,2]
+truem3_3 = nine_nine[1][2][:,:,1,3]
+truerow1_3 = hcat(truem1_3,truem2_3,truem3_3)
+
+truem4_3 = nine_nine[1][2][:,:,1,4]
+truem5_3 = nine_nine[1][2][:,:,1,5]
+truem6_3 = nine_nine[1][2][:,:,1,6]
+truerow2_3 = hcat(truem4_3,truem5_3,truem6_3)
+
+truem7_3 = nine_nine[1][2][:,:,1,7]
+truem8_3 = nine_nine[1][2][:,:,1,8]
+truem9_3 = nine_nine[1][2][:,:,1,9]
+truerow3_3 = hcat(truem7_3,truem8_3,truem9_3)
+
+truemap27x27_3 = vcat(truerow1_3, truerow2_3, truerow3_3)
+truemap1_3 = heatmap(truemap27x27_3)
+
+plot(truemap1_2, truemap1_3, heatmap(validate_connect27x27[1])) #minibatching does not have an effect
