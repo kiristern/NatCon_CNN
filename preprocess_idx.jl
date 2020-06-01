@@ -39,18 +39,12 @@ for i in cart_idx
   push!(range, c)
 end
 
-#make 27x27 imgs from coordinates
-#validate_map27x27 = []
+#make 27x27 imgs from coordinates as reference to compare
 validate_connect27x27 = []
 for i in coordinates
-  # = cat(x_resistance, x_origin, dims=3) #concatenate resistance and origin layers
   y = Connectivity[first(i):first(i)+stride-1,last(i):last(i)+stride-1] #matrix we want to predict
-  #if minimum(y) > 0 #predict only when there is connectivity
-  #  push!(validate_map27x27, x)
     push!(validate_connect27x27, y)
-  #end
 end
-# validate_map27x27
 validate_connect27x27
 
 #get every single index in samples
@@ -66,17 +60,11 @@ x_indices
 y_indices
 
 #get the first coordinate for each smaller (9x9) sample
-# x_idxes = x_indices[1:Stride:end]
-# y_idxes = y_indices[1:Stride:end]
 x_idxes = [x[1:Stride:end] for x in x_indices]
 y_idxes = [y[1:Stride:end] for y in y_indices]
-Tuple.(zip(x_idxes, y_idxes))
+#Tuple.(zip(x_idxes, y_idxes))
 
-#get starting coordinates, (a,b) (a,b+9), (a,b+18)
-#replicate the first element in the cartesian tuple 3 times
-replicate = first.(repeat(coordinates, inner=3))
-replicate_x = first.(repeat(x_idxes, inner=3))
-replicate_y = first.(repeat(y_idxes, inner=3))
+#get the 9 starting coordinates
 replicate_x = repeat.(x_idxes, inner = 3)
 replicate_y = repeat.(y_idxes, outer = 3)
 
@@ -100,16 +88,14 @@ for (i, j) in reduce(vcat, dup_coor)
   push!(maps9x9, x2)
   push!(connect9x9, y2)
 end
-
 maps9x9
 connect9x9
-validate_connect27x27
 
+validate_connect27x27
 
 
 ### minibatch ###
 #subtract remainders to ensure all minibatches are the same length
-batch_size = 32
 droplast9x9 = rem(length(maps9x9), batch_size)
 mb_idxs9x9 = Iterators.partition(1:length(maps9x9)-droplast9x9, batch_size)
 #train set in the form of batches
@@ -118,74 +104,24 @@ nine_nine
 
 
 
-#TODO: verify connectivity values are the same
-truem1_2 = connect9x9[1]
-truem2_2 = connect9x9[2]
-truem3_2 = connect9x9[3]
-truerow1_2 = hcat(truem1_2,truem2_2,truem3_2)
-truem4_2 = connect9x9[4]
-truem5_2 = connect9x9[5]
-truem6_2 = connect9x9[6]
-truerow2_2 = hcat(truem4_2,truem5_2,truem6_2)
-truem7_2 = connect9x9[7]
-truem8_2 = connect9x9[8]
-truem9_2 = connect9x9[9]
-truerow3_2 = hcat(truem7_2,truem8_2,truem9_2)
-connect9x9[1:3]
-
-truemap = [reduce(hcat, connect9x9[i:i+2]) for i in 1:3:length(connect9x9)]
-truemap = [reduce(vcat, truemap[i:i+2]) for i in 1:3:length(truemap)]
+#verify connectivity values are the same
 truemap = [reduce(hcat, p) for p in Iterators.partition(connect9x9, 3)]
 truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, 3)]
+plot(heatmap(truemap[1]), heatmap(validate_connect27x27[1]))
 
-heatmap(truemap[1])
-
-truemap27x27_2 = vcat(truerow1_2, truerow2_2, truerow3_2)
-truemap1_2 = heatmap(truemap27x27_2)
-plot(heatmap(validate_connect27x27[1]), truemap1_2)
-
-#compare minibatching
-truem1_3 = nine_nine[1][2][:,:,1,1]
-truem2_3 = nine_nine[1][2][:,:,1,2]
-truem3_3 = nine_nine[1][2][:,:,1,3]
-truerow1_3 = hcat(truem1_3,truem2_3,truem3_3)
-truem4_3 = nine_nine[1][2][:,:,1,4]
-truem5_3 = nine_nine[1][2][:,:,1,5]
-truem6_3 = nine_nine[1][2][:,:,1,6]
-truerow2_3 = hcat(truem4_3,truem5_3,truem6_3)
-truem7_3 = nine_nine[1][2][:,:,1,7]
-truem8_3 = nine_nine[1][2][:,:,1,8]
-truem9_3 = nine_nine[1][2][:,:,1,9]
-truerow3_3 = hcat(truem7_3,truem8_3,truem9_3)
-truemap27x27_3 = vcat(truerow1_3, truerow2_3, truerow3_3)
-truemap27x27_3 = [reduce(hcat, nine_nine[1][2][:,:,1,i+2]) for i in 1:3:9]
-truemap27x27_3 = [reduce(vcat, nine_nine[1][2][:,:,1,i+2]) for i in 1:3:9]
-truemap1_3 = heatmap(truemap27x27_3)
-plot(truemap1_2, truemap1_3)
-
-
-
-plot(truemap1_2, truemap1_3, heatmap(validate_connect27x27[1]))
+#compare minibatching: reduce from 4d to 2d
 tmp = [nine_nine[i][2] for i in eachindex(nine_nine)]
-t = tmp[1]
 m = []
 for t in tmp
-  tmp2 = [t[:,:,1,i] for i in 1:32]
+  tmp2 = [t[:,:,1,i] for i in 1:batch_size]
   push!(m, tmp2)
 end
 m
 m = reduce(vcat, m)
-m = [t[:,:,1,i] for t in tmp, i in 1:size(nine_nine[1][2])[4]]
-truemap = [reduce(hcat, p) for p in Iterators.partition(m, 3)]
-truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, 3)]
+mini_truemap = [reduce(hcat, p) for p in Iterators.partition(m, 3)]
+mini_truemap = [reduce(vcat, p) for p in Iterators.partition(mini_truemap[1:149], 3)] #[1:149] because last element 9x9 not 9x27
 
-
-connect9x9
-m
-plot(heatmap(connect9x9[33]), heatmap(nine_nine[2][2][:,:,1,1])) #minibatching does not have an effect on results
-m == connect9x9[1:448]
-
-m[1]
-connect9x9[1]
-
+#check if values are the same
 all(isapprox.(m, connect9x9[1:448]))
+
+plot(heatmap(truemap[1]), heatmap(validate_connect27x27[1]), heatmap(mini_truemap[1]))
