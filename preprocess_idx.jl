@@ -31,7 +31,7 @@ Random.seed!(1234)
 cart_idx = sample(findall(Connectivity .> 0), samples)
 coordinates = Tuple.(cart_idx)
 
-#create range around each sample index
+#create range around each sample index (length of stride)
 range = []
 for i in cart_idx
   a, b = Tuple(i)
@@ -39,22 +39,21 @@ for i in cart_idx
   push!(range, c)
 end
 
-
 #make 27x27 imgs from coordinates
-validation_maps = []
-validation_connect = []
+validate_map27x27 = []
+validate_connect27x27 = []
 for i in coordinates
   x_resistance = Resistance[first(i):first(i)+stride-1,last(i):last(i)+stride-1]
   x_origin = Origin[first(i):first(i)+stride-1,last(i):last(i)+stride-1]
   x = cat(x_resistance, x_origin, dims=3) #concatenate resistance and origin layers
   y = Connectivity[first(i):first(i)+stride-1,last(i):last(i)+stride-1] #matrix we want to predict
   if minimum(y) > 0 #predict only when there is connectivity
-    push!(validation_maps, x)
-    push!(validation_connect, y)
+    push!(validate_map27x27, x)
+    push!(validate_connect27x27, y)
   end
 end
-validation_maps
-validation_connect
+validate_map27x27
+validate_connect27x27
 
 #get every single index in samples
 x_indices = []
@@ -68,26 +67,50 @@ end
 x_indices
 y_indices
 
-
 #get the first coordinate for each smaller (9x9) sample
 x_idxes = x_indices[1:Stride:end]
 y_idxes = y_indices[1:Stride:end]
 
+#get starting coordinates, (a,b) (a,b+9), (a,b+18)
+#replicate the first element in the cartesian tuple 3 times
+replicate = first.(repeat(coordinates, inner=3))
+
+#zip coordinates together
+dup_coor = []
+for i in 1:length(replicate)
+  zip_dup = Tuple.(zip(replicate[i], y_idxes[i])) #y_idxes from preprocess_idx.jl script
+  push!(dup_coor, zip_dup)
+end
+dup_coor
+
 #create 9x9 samples
 maps9x9 = []
 connect9x9 = []
-for i in x_idxes, j in y_idxes
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
-  y = Connectivity[i:(i+desired-1),j:(j+desired-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
-    push!(maps9x9, x)
-    push!(connect9x9, y)
+for i in first.(dup_coor), j in last.(dup_coor)
+  x_res2 = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
+  x_or2 = Origin[i:(i+Stride-1),j:(j+Stride-1)]
+  x2 = cat(x_res2, x_or2, dims=3) #concatenate resistance and origin layers
+  y2 = Connectivity[i:(i+desired-1),j:(j+desired-1)] #matrix we want to predict
+  if minimum(y2) > 0 #predict only when there is connectivity
+    push!(maps9x9, x2)
+    push!(connect9x9, y2)
   end
 end
 
 maps9x9
 connect9x9
-validation_maps
-validation_connect
+
+validate_map27x27
+validate_connect27x27
+
+### minibatch ###
+#subtract remainders to ensure all minibatches are the same length
+droplast9x9 = rem(length(maps9x9), batch_size)
+mb_idxs9x9 = Iterators.partition(1:length(maps9x9)-droplast9x9, batch_size)
+#train set in the form of batches
+nine_nine = [make_minibatch(maps9x9, connect9x9, i) for i in mb_idxs]
+
+nine_nine
+
+
+#TODO: verify connectivity values are the same
