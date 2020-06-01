@@ -104,12 +104,13 @@ nine_nine
 
 
 
-#verify connectivity values are the same
+### verify connectivity values are the same ###
+#stitch together 3 (9x9) x 3 (9x9)
 truemap = [reduce(hcat, p) for p in Iterators.partition(connect9x9, 3)]
 truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, 3)]
 plot(heatmap(truemap[1]), heatmap(validate_connect27x27[1]))
 
-#compare minibatching: reduce from 4d to 2d
+#compare connectivity layers from minibatching: reduce from 4d to 2d
 tmp = [nine_nine[i][2] for i in eachindex(nine_nine)]
 m = []
 for t in tmp
