@@ -23,8 +23,9 @@ m = Chain(
 
 ls = m[1:4](train_set[1][1])
 reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
+
 model = Chain(
-    #Apply a Conv layer to a 2-channel input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
+    #Apply a Conv layer to a 2-channel (R & O layer) input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
     Conv((3,3), 2=>16, pad=(1,1), relu),
     MaxPool((2,2)),
     #2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
