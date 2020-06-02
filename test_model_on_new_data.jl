@@ -33,31 +33,20 @@ validation_set
 
 #=
 Test model on:
+    nine_nine: set of R&O layers and C layer
 
-nine_nine: set of R&O layers and C layer
+Stitch together individual 9x9 maps into 27x27 maps
 
 check accuracy with:
-validate_connect27x27: vector of m elements of dims 27x27
-
+    validate_connect27x27: vector of m elements of dims 27x27
 =#
 
-model_on_9x9 = []
-for i in 1:length(nine_nine)
-    m = model(nine_nine[i][1])
-    push!(model_on_9x9, m)
-end
-model_on_9x9
+#run trained model on new minibatched data
+model_on_9x9 = trained_model(nine_nine)
 
-mod = []
-for t in model_on_9x9
-  tmp2 = [t[:,:,1,i] for i in 1:batch_size]
-  push!(mod, tmp2)
-end
-mod
-mod = reduce(vcat, mod)
-stitched = [reduce(hcat, p) for p in Iterators.partition(mod, 3)]
-stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:149], 3)]
-plot(heatmap(stitchedmap[1]), heatmap(validate_connect27x27[1]))
+#stitch together 27x27 maps
+stitchedmap = stitch(model_on_9x9)
 
+#plot
 scatterplotmaps = scatter(stitchedmap[1], validate_connect27x27[1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
 plot(heatmap(stitchedmap[1]), heatmap(validate_connect27x27[1]), scatterplotmaps)
