@@ -81,8 +81,15 @@ function trained_model(data)
   return model_on_data
 end
 
+#function to stitch 2D
+function stitch2d(map)
+  truemap = [reduce(hcat, p) for p in Iterators.partition(map, 3)]
+  truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, 3)]
+  return truemap
+end
+
 #function to stitch together 3 (9x9) x 3 (9x9) to create one 27x27
-function stitch(model_on_9x9)
+function stitch4d(model_on_9x9)
   #reduce 4D to 2D
   mod = []
   for t in model_on_9x9
