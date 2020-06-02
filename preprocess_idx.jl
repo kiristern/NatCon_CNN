@@ -106,23 +106,14 @@ nine_nine
 
 ### verify connectivity values are the same ###
 #stitch together 3 (9x9) x 3 (9x9)
-truemap = [reduce(hcat, p) for p in Iterators.partition(connect9x9, 3)]
-truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, 3)]
-plot(heatmap(truemap[1]), heatmap(validate_connect27x27[1]))
+truemap = stitch2d(connect9x9)
+plot(heatmap(truemap[50]), heatmap(validate_connect27x27[50]))
 
-#compare connectivity layers from minibatching: reduce from 4d to 2d
-tmp = [nine_nine[i][2] for i in eachindex(nine_nine)]
-m = []
-for t in tmp
-  tmp2 = [t[:,:,1,i] for i in 1:batch_size]
-  push!(m, tmp2)
-end
-m
-m = reduce(vcat, m)
-mini_truemap = [reduce(hcat, p) for p in Iterators.partition(m, 3)]
-mini_truemap = [reduce(vcat, p) for p in Iterators.partition(mini_truemap[1:length(mini_truemap)-1], 3)] #[1:149] because last element 9x9 not 9x27
+#compare connectivity layers from minibatching
+mini_truemap = stitch4d([nine_nine[i][2] for i in eachindex(nine_nine)])
 
 #check if values are the same
-all(isapprox.(m, connect9x9[1:896]))
+all(isapprox.(m, connect9x9[1:length(m)]))
 
-plot(heatmap(truemap[1]), heatmap(validate_connect27x27[1]), heatmap(mini_truemap[1]))
+#compare all 27x27 connectivity layers
+plot(heatmap(truemap[56]), heatmap(validate_connect27x27[56]), heatmap(mini_truemap[56]))
