@@ -74,3 +74,26 @@ end
 
 #Get accuracy per pixel (between true and predicted value)
 accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is better
+
+#run trained model on new data
+function trained_model(data)
+  model_on_data = [model(data[i][1]) for i in 1:length(data)]
+  return model_on_data
+end
+
+#function to stitch together 3 (9x9) x 3 (9x9) to create one 27x27
+function stitch(model_on_9x9)
+  #reduce 4D to 2D
+  mod = []
+  for t in model_on_9x9
+    tmp2 = [t[:,:,1,i] for i in 1:batch_size]
+    push!(mod, tmp2)
+  end
+  #reduce to one vector of arrays
+  mod = reduce(vcat, mod)
+  #hcat groups of three
+  stitched = [reduce(hcat, p) for p in Iterators.partition(mod, 3)]
+  #vcat the stitched hcats
+  stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:length(stitched)-1], 3)]
+  return stitchedmap[1:length(stitchedmap)-1]
+end
