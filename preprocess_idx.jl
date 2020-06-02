@@ -106,13 +106,23 @@ nine_nine
 ### verify connectivity values are the same ###
 #stitch together 3 (9x9) x 3 (9x9)
 truemap = stitch2d(connect9x9)
-plot(heatmap(truemap[50]), heatmap(validate_connect27x27[50]))
+plot(heatmap(truemap[14]), heatmap(validate_connect27x27[14]))
 
 #compare connectivity layers from minibatching
 mini_truemap = stitch4d([nine_nine[i][2] for i in eachindex(nine_nine)])
 
-#check if values are the same
-all(isapprox.(m, connect9x9[1:length(m)]))
-
 #compare all 27x27 connectivity layers
 plot(heatmap(truemap[56]), heatmap(validate_connect27x27[56]), heatmap(mini_truemap[56]))
+
+#compare non-visually
+#reduce 4D to 2D
+minib = []
+for t in [nine_nine[i][2] for i in eachindex(nine_nine)] #for t in each connectivity layer in nine_nine
+  tmp2 = [t[:,:,1,i] for i in 1:batch_size]
+  push!(minib, tmp2)
+end
+#reduce to one vector of arrays
+minib = reduce(vcat, minib)
+
+#check if connectivity of minibatch values are the same as connect
+all(isapprox.(minib, connect9x9[1:length(minib)]))
