@@ -20,15 +20,15 @@ Output:
 
 #select new coordinates for obtaining n 27x27 samples
 stride = 27
-samples = 50
+samples = 100
 
-#TODO try to sample between these values (to avoid going out of bounds)
-lx= length(Resistance[:,1])-stride
+#sample between these values only (to avoid going out of bounds)
+lx = length(Resistance[:,1])-stride
 ly = length(Resistance[1,:])-stride
 
 Random.seed!(1234)
 #select coordinates where there is data
-cart_idx = sample(findall(Connectivity .> 0), samples)
+cart_idx = sample(findall(Connectivity[1:lx, 1:ly] .> 0), samples)
 coordinates = Tuple.(cart_idx)
 
 #create range around each sample index (length of stride)
@@ -120,9 +120,9 @@ end
 m
 m = reduce(vcat, m)
 mini_truemap = [reduce(hcat, p) for p in Iterators.partition(m, 3)]
-mini_truemap = [reduce(vcat, p) for p in Iterators.partition(mini_truemap[1:149], 3)] #[1:149] because last element 9x9 not 9x27
+mini_truemap = [reduce(vcat, p) for p in Iterators.partition(mini_truemap[1:length(mini_truemap)-1], 3)] #[1:149] because last element 9x9 not 9x27
 
 #check if values are the same
-all(isapprox.(m, connect9x9[1:448]))
+all(isapprox.(m, connect9x9[1:896]))
 
 plot(heatmap(truemap[1]), heatmap(validate_connect27x27[1]), heatmap(mini_truemap[1]))
