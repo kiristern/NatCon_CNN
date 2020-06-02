@@ -79,10 +79,10 @@ dup_coor
 #create 9x9 samples
 maps9x9 = []
 connect9x9 = []
-for i in first.(vcat(dup_coor...)), j in last.(reduce(vcat, dup_coor))
+for (i,j) in reduce(vcat, dup_coor)
   x_res2 = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or2 = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x2 = cat(x_res2, x_or2, dims=3) 
+  x2 = cat(x_res2, x_or2, dims=3)
   y2 = Connectivity[i:(i+Stride-1),j:(j+Stride-1)]
   push!(maps9x9, x2)
   push!(connect9x9, y2)
