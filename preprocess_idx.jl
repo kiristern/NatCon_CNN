@@ -1,8 +1,8 @@
 #=
 
-Get a 27x27 sample from original data maps and, using the trained (working) model, predict nine 9x9 images and "stitch" together in 3x3 batch to get a final 27x27 image.
+Get a stridexstride sample from original data maps and, using the trained (working) model, predict nine 9x9 images and "stitch" together in desiredxdesired batch to get a final stridexstride image.
 
-n 27x27 images; aka, groups of 3 (9x9) by 3 (9x9) images
+n desiredxdesired images; aka, groups of "desired" (9x9) by "desired" (9x9) images
 Output:
   maps9x9: vector of n elements of dims 9x9x2
   connect9x9: vector of n elements of dims 9x9
