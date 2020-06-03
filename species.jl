@@ -46,6 +46,7 @@ Stride = 9
 
 maps_carcajou, connect_carcajou = training_dataset(resistance_carcajou, Origin, connectivity_carcajou)
 test_maps_carcajou, test_connect_carcajou = testing_dataset(resistance_carcajou, Origin, connectivity_carcajou)
+train_maps_carcajou, train_connect_carcajou, valid_maps_carcajou, valid_connect_carcajou = partition_dataset(maps_carcajou, connect_carcajou)
 
 maps_cougar, connect_cougar = training_dataset(resistance_cougar, Origin, connectivity_cougar)
 test_maps_cougar, test_connect_cougar = testing_dataset(resistance_cougar, Origin, connectivity_cougar)
