@@ -15,10 +15,6 @@ Output:
 # include("functions.jl")
 # include("preprocess.jl")
 
-
-######
-# First run
-######
 maps
 connect
 
