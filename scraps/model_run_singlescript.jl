@@ -60,10 +60,6 @@ function build_model(args; imgsize = (Stride,Stride,2))
     Conv((3, 3), 16=>32, pad=(1,1), relu),
     MaxPool((2,2)),
 
-    # # Third convolution, operating upon a 2x2 image
-    # Conv((3, 3), 32=>32, pad=(1,1), relu),
-    # MaxPool((2,2)),
-
     # Reshape 3d tensor into a 2d one using `Flux.flatten`, at this point it should be (3, 3, 32, N)
     flatten,
     Dense(Int(prod(size(model[1:4](train_set[1][1])))/batch_size), Stride*Stride),
