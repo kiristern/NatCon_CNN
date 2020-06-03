@@ -15,7 +15,15 @@ function nan_to_0(s)
   end
 end
 
-#Create Training and Testing datasets
+
+
+#####################
+# Creating datasets #
+#####################
+
+#=
+Create Training and Testing datasets
+=#
 #Extract 150 random 9x9 resistance, origin, and connectivity layers
 function make_datasets(Resistance, Origin, Connectivity)
   Random.seed!(1234)
@@ -50,12 +58,9 @@ function make_datasets(Resistance, Origin, Connectivity)
 end
 
 
-
-
-#########################
-# Create validation set #
-#########################
-
+#=
+Create Validation dataset
+=#
 function partition_dataset(maps, connect, valid_ratio=0.1, Shuffle=true)
   """
   Create a validation set from the training set
@@ -106,6 +111,28 @@ function make_minibatch(X, Y, idxs)
     end
     return (X_batch, Y_batch)
 end
+
+
+#=
+Create Train_set and validation_set
+=#
+function make_sets(train_maps, train_connect, valid_maps, valid_connect)
+  #subtract remainders to ensure all minibatches are the same length
+  droplast = rem(length(train_maps), batch_size)
+  mb_idxs = Iterators.partition(1:length(train_maps)-droplast, batch_size)
+  #train set in the form of batches
+  train_set = [make_minibatch(train_maps, train_connect, i) for i in mb_idxs]
+
+  droplast2 = rem(length(valid_maps), batch_size)
+  mb_idxs2 = Iterators.partition(1:length(valid_maps)-droplast2, batch_size)
+  #prepare validation set as one giant minibatch
+  validation_set = [make_minibatch(valid_maps, valid_connect, i) for i in mb_idxs2]
+  return train_set, validation_set
+end
+
+
+
+
 
 
 

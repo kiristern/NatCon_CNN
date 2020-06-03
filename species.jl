@@ -43,13 +43,30 @@ begin
 end
 
 Stride = 9
+batch_size = 32
 
-maps_carcajou, connect_carcajou = training_dataset(resistance_carcajou, Origin, connectivity_carcajou)
-test_maps_carcajou, test_connect_carcajou = testing_dataset(resistance_carcajou, Origin, connectivity_carcajou)
+#carcajou
+maps_carcajou, connect_carcajou, test_maps_carcajou, test_connect_carcajou = make_datasets(resistance_carcajou, Origin, connectivity_carcajou)
+
 train_maps_carcajou, train_connect_carcajou, valid_maps_carcajou, valid_connect_carcajou = partition_dataset(maps_carcajou, connect_carcajou)
 
-maps_cougar, connect_cougar = training_dataset(resistance_cougar, Origin, connectivity_cougar)
-test_maps_cougar, test_connect_cougar = testing_dataset(resistance_cougar, Origin, connectivity_cougar)
+train_set_carcajou, validation_set_carcajou = make_sets(train_maps_carcajou, train_connect_carcajou, valid_maps_carcajou, valid_connect_carcajou)
 
-maps_ours, connect_ours = training_dataset(resistance_cougar, Origin, connectivity_ours)
-test_maps_ours, test_connect_ours = testing_dataset(resistance_cougar, Origin, connectivity_ours)
+
+
+
+#cougar
+maps_cougar, connect_cougar, test_maps_cougar, test_connect_cougar = make_datasets(resistance_cougar, Origin, connectivity_cougar)
+
+train_maps_cougar, train_connect_cougar, valid_maps_cougar, valid_connect_cougar = partition_dataset(maps_cougar, connect_cougar)
+
+train_set_cougar, validation_set_cougar = make_sets(train_maps_cougar, train_connect_cougar, valid_maps_cougar, valid_connect_cougar)
+
+
+
+#ours noir
+maps_ours, connect_ours, test_maps_ours, test_connect_ours = make_datasets(resistance_cougar, Origin, connectivity_ours)
+
+train_maps_ours, train_connect_ours, valid_maps_ours, valid_connect_ours = partition_dataset(maps_ours, connect_ours)
+
+train_set_ours, validation_set_ours = make_sets(train_maps_ours, train_connect_ours, valid_maps_ours, valid_connect_ours)
