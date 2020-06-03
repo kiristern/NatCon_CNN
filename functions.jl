@@ -55,26 +55,12 @@ function testing_dataset(Resistance, Origin, Connectivity)
 end
 
 
-#############
-# Minibatch #
-#############
-#create minibatches
-function make_minibatch(X, Y, idxs)
-    X_batch = Array{Float32}(undef, size(X[1])..., length(idxs))
-    for i in 1:length(idxs)
-        X_batch[:, :, :, i] = Float32.(X[idxs[i]])
-    end
-    #transform (9x9) to (9x9x1x#batch)
-    Y_batch = Array{Float32}(undef, size(Y[1])...,1, length(idxs))
-    for i in 1:length(idxs)
-        Y_batch[:, :, :, i] = Float32.(Y[idxs[i]])
-    end
-    return (X_batch, Y_batch)
-end
 
 
+#########################
+# Create validation set #
+#########################
 
-#Create validation set
 function partition_dataset(maps, connect, valid_ratio=0.1, Shuffle=true)
   """
   Create a validation set from the training set
@@ -107,6 +93,31 @@ function partition_dataset(maps, connect, valid_ratio=0.1, Shuffle=true)
 end
 
 
+
+#############
+# Minibatch #
+#############
+
+#create minibatches
+function make_minibatch(X, Y, idxs)
+    X_batch = Array{Float32}(undef, size(X[1])..., length(idxs))
+    for i in 1:length(idxs)
+        X_batch[:, :, :, i] = Float32.(X[idxs[i]])
+    end
+    #transform (9x9) to (9x9x1x#batch)
+    Y_batch = Array{Float32}(undef, size(Y[1])...,1, length(idxs))
+    for i in 1:length(idxs)
+        Y_batch[:, :, :, i] = Float32.(Y[idxs[i]])
+    end
+    return (X_batch, Y_batch)
+end
+
+
+
+#########
+# Model #
+#########
+
 # Augment `x`(input) a little bit here, adding in random noise.
 augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
 #returns a vector of all parameters used in model
@@ -123,6 +134,14 @@ end
 
 #Get accuracy per pixel (between true and predicted value)
 accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is better
+
+
+
+
+
+#################################
+# Run trained model on new data #
+#################################
 
 #run trained model on new data
 function trained_model(data)
