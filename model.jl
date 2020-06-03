@@ -13,16 +13,6 @@ begin
     print("##########################")
 end
 
-#Needed to update model
-m = Chain(
-    Conv((3,3), 2=>16, pad=(1,1), relu),
-    MaxPool((2,2)),
-    Conv((3,3), 16=>32, pad=(1,1), relu),
-    MaxPool((2,2))
-)
-
-ls = m[1:4](train_set[1][1])
-reshapeLayer = size(ls,1)*size(ls,2)*size(ls,3)
 
 model = Chain(
     #Apply a Conv layer to a 2-channel (R & O layer) input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
@@ -33,9 +23,9 @@ model = Chain(
     MaxPool((2,2)),
 
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, (reshapeLayer, batch_size)),
+    x -> reshape(x, (Int(prod(size(model2[1:4](train_set[1][1])))/batch_size), batch_size)),
 
-     Dense(reshapeLayer, Stride*Stride),
+     Dense(Int(prod(size(model2[1:4](train_set[1][1])))/batch_size), Stride*Stride),
 
     #reshape to match output dimensions
     x -> reshape(x, (Stride, Stride, 1, batch_size))
@@ -46,6 +36,7 @@ model[1](train_set[1][1]) #layer 1: 9x9x16x32
 model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
 model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
 model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
+# reshape layer
 model[1:5](train_set[1][1]) #layer 5: 128x32
 model[1:6](train_set[1][1]) #layer 6: 81x32
 model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
