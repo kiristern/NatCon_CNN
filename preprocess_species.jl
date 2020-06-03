@@ -28,50 +28,27 @@ resistance_cougar = readasc("data/maps_for_Kiri/Resistance_zone_beta_Cougar.asc"
 resistance_ours = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
 resistance_coyote = readasc("data/maps_for_Kiri/Resistance_zone_beta_Coyote.asc"; nd="NODATA")
 
-origin = readasc("data/input/origin.asc"; nd="NODATA")
+Origin = readasc("data/input/origin.asc"; nd="NODATA")
 
-nan_to_0(Resistance)
-nan_to_0(Origin)
-nan_to_0(Connectivity)
+#convert NaN to zero
+begin
+  nan_to_0(connectivity_carcajou)
+  nan_to_0(connectivity_cougar)
+  nan_to_0(connectivity_ours)
+  nan_to_0(resistance_carcajou)
+  nan_to_0(resistance_cougar)
+  nan_to_0(resistance_ours)
+  nan_to_0(resistance_coyote)
+  nan_to_0(Origin)
+end
 
-#create Training dataset
-# Extract 150 random 9x9 resistance, origin, and connectivity layers
-Random.seed!(1234)
 Stride = 9
 
-maps = []
-connect = []
-for i in rand(10:950, 150), j in rand(10:950, 150)
-  #taking groups of matrices of dimensions StridexStride
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
-  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
-    push!(maps, x)
-    push!(connect, y)
-  end
-end
+maps_carcajou, connect_carcajou = training_dataset(resistance_carcajou, Origin, connectivity_carcajou)
+test_maps_carcajou, test_connect_carcajou = testing_dataset(resistance_carcajou, Origin, connectivity_carcajou)
 
-#create Testing dataset
-Random.seed!(5678)
-test_maps = []
-test_connect = []
+maps_cougar, connect_cougar = training_dataset(resistance_cougar, Origin, connectivity_cougar)
+test_maps_cougar, test_connect_cougar = testing_dataset(resistance_cougar, Origin, connectivity_cougar)
 
-for i in rand(10:950, 150), j in rand(10:950, 150)
-  #taking groups of matrices of dimensions StridexStride
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
-  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
-    push!(test_maps, x)
-    push!(test_connect, y)
-  end
-end
-
-#script returns:
-maps
-connect
-test_maps
-test_connect
+maps_ours, connect_ours = training_dataset(resistance_cougar, Origin, connectivity_ours)
+test_maps_ours, test_connect_ours = testing_dataset(resistance_cougar, Origin, connectivity_ours)
