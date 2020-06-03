@@ -63,9 +63,12 @@ end
 
 # Augment `x`(input) a little bit here, adding in random noise.
 augment(x) = x .+ gpu(0.1f0*randn(eltype(x), size(x)))
+#returns a vector of all parameters used in model
 paramvec(model) = vcat(map(p->reshape(p, :), params(model))...)
+#check if any element is NaN or not
 anynan(x) = any(isnan.(x))
 
+#calculate L2 loss between our prediction and "y_hat" (calculated from "model(x)") and the ground truth "y". Augment the data a bit by adding gaussian random noise to images to make it more robust
 function loss(x, y)
     x̂ = augment(x)
     ŷ = model(x̂)
