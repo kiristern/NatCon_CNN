@@ -6,7 +6,7 @@ Create and train a model
 
 cd(@__DIR__)
 @time include("libraries.jl")
-@time include("functions.jl")
+@time include("functions.jl") #desired object found in line 23 of preprocess_idx.jl script
 @time include("preprocess.jl")
 @time include("validation_dataset.jl")
 @time include("minibatch.jl")
@@ -29,7 +29,6 @@ p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1]
 plot(p1,p2,p3)
 # savefig("figures/$(Stride)x$(Stride)_$(run)sec_$(best_acc*100)%.png")
 
-validation_set
 
 #=
 Test model on:
@@ -41,12 +40,13 @@ check accuracy with:
     validate_connect27x27: vector of m elements of dims 27x27
 =#
 
-#run trained model on new minibatched data
+#run trained model on new minibatched data (from )
 model_on_9x9 = trained_model(nine_nine)
 
 #stitch together 27x27 maps
 stitchedmap = stitch4d(model_on_9x9)
 
 #plot
-scatterplotmaps = scatter(stitchedmap[56], validate_connect27x27[56], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-plot(heatmap(stitchedmap[56]), heatmap(validate_connect27x27[56]), scatterplotmaps)
+scatterplotmaps = scatter(stitchedmap[10], validation_connectivity_map[10], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(heatmap(stitchedmap[10]), heatmap(validation_connectivity_map[10]), scatterplotmaps)
+# savefig("figures/45x45[10].png")

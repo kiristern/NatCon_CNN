@@ -14,13 +14,14 @@ Output:
 
 # cd(@__DIR__)
 #
-@time include("libraries.jl")
-@time include("functions.jl")
-@time include("preprocess.jl")
+# @time include("libraries.jl")
+# @time include("functions.jl")
+# @time include("preprocess.jl")
 
-#select new coordinates for obtaining n 27x27 samples
-stride = 27
+#select new coordinates for obtaining n stridexstride samples
 samples = 100
+desired = 5 #how many 9x9 you want
+stride = Stride*desired
 
 #sample between these values only (to avoid going out of bounds)
 lx = length(Resistance[:,1])-stride
@@ -40,12 +41,12 @@ for i in cart_idx
 end
 
 #make 27x27 imgs from coordinates as reference to compare
-validate_connect27x27 = []
+validation_connectivity_map = []
 for i in coordinates
   y = Connectivity[first(i):first(i)+stride-1,last(i):last(i)+stride-1] #matrix we want to predict
-    push!(validate_connect27x27, y)
+    push!(validation_connectivity_map, y)
 end
-validate_connect27x27
+validation_connectivity_map
 
 #get every single index in samples
 x_indices = []
@@ -64,8 +65,8 @@ x_idxes = [x[1:Stride:end] for x in x_indices]
 y_idxes = [y[1:Stride:end] for y in y_indices]
 
 #get the 9 starting coordinates
-replicate_x = repeat.(x_idxes, inner = 3)
-replicate_y = repeat.(y_idxes, outer = 3)
+replicate_x = repeat.(x_idxes, inner = desired)
+replicate_y = repeat.(y_idxes, outer = desired)
 
 #zip coordinates together
 dup_coor = []
@@ -89,7 +90,6 @@ end
 maps9x9
 connect9x9
 
-validate_connect27x27
 
 
 ### minibatch ###
@@ -105,15 +105,15 @@ nine_nine
 ### verify connectivity values are the same ###
 #stitch together 3 (9x9) x 3 (9x9)
 truemap = stitch2d(connect9x9)
-plot(heatmap(truemap[50]), heatmap(validate_connect27x27[50]))
+plot(heatmap(truemap[50]), heatmap(validation_connectivity_map[50]))
 
 #compare connectivity layers from minibatching
 mini_truemap = stitch4d([nine_nine[i][2] for i in eachindex(nine_nine)])
 
-#compare all 27x27 connectivity layers
-plot(heatmap(truemap[56]), heatmap(validate_connect27x27[56]), heatmap(mini_truemap[56]))
+#compare all connectivity layers
+plot(heatmap(truemap[56]), heatmap(validation_connectivity_map[56]), heatmap(mini_truemap[56]))
 
-#compare non-visually
+### verify non-visually ###
 #reduce 4D to 2D
 minib = []
 for t in [nine_nine[i][2] for i in eachindex(nine_nine)] #for t in each connectivity layer in nine_nine

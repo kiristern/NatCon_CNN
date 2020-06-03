@@ -86,8 +86,8 @@ end
 
 #function to stitch 2D
 function stitch2d(map)
-  truemap = [reduce(hcat, p) for p in Iterators.partition(map, 3)]
-  truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, 3)]
+  truemap = [reduce(hcat, p) for p in Iterators.partition(map, desired)]
+  truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, desired)]
   return truemap
 end
 
@@ -102,8 +102,8 @@ function stitch4d(model_on_9x9)
   #reduce to one vector of arrays
   mod = reduce(vcat, mod)
   #hcat groups of three
-  stitched = [reduce(hcat, p) for p in Iterators.partition(mod, 3)]
+  stitched = [reduce(hcat, p) for p in Iterators.partition(mod, desired)]
   #vcat the stitched hcats
-  stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:length(stitched)-1], 3)]
+  stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:length(stitched)-1], desired)]
   return stitchedmap[1:length(stitchedmap)-1]
 end
