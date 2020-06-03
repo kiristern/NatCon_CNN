@@ -62,7 +62,6 @@ y_indices
 #get the first coordinate for each smaller (9x9) sample
 x_idxes = [x[1:Stride:end] for x in x_indices]
 y_idxes = [y[1:Stride:end] for y in y_indices]
-#Tuple.(zip(x_idxes, y_idxes))
 
 #get the 9 starting coordinates
 replicate_x = repeat.(x_idxes, inner = 3)
@@ -106,7 +105,7 @@ nine_nine
 ### verify connectivity values are the same ###
 #stitch together 3 (9x9) x 3 (9x9)
 truemap = stitch2d(connect9x9)
-plot(heatmap(truemap[14]), heatmap(validate_connect27x27[14]))
+plot(heatmap(truemap[50]), heatmap(validate_connect27x27[50]))
 
 #compare connectivity layers from minibatching
 mini_truemap = stitch4d([nine_nine[i][2] for i in eachindex(nine_nine)])
@@ -121,8 +120,7 @@ for t in [nine_nine[i][2] for i in eachindex(nine_nine)] #for t in each connecti
   tmp2 = [t[:,:,1,i] for i in 1:batch_size]
   push!(minib, tmp2)
 end
-#reduce to one vector of arrays
+#reduce to single vector
 minib = reduce(vcat, minib)
-
 #check if connectivity of minibatch values are the same as connect
 all(isapprox.(minib, connect9x9[1:length(minib)]))

@@ -38,6 +38,7 @@ run = @time @elapsed for epoch_idx in 1:200
     # Train for a single epoch
     Flux.train!(loss, params(model), train_set, opt)
 
+    #Terminate on NaN
     if anynan(paramvec(model))
         @error "NaN params"
         break

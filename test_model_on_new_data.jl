@@ -13,7 +13,7 @@ cd(@__DIR__)
 @time include("model.jl")
 @time @load "BSON/overwrite_9x9.bson" params #upload last saved model
 Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
-#@time include("train_model.jl")
+# @time include("train_model.jl")
 @time include("preprocess_idx.jl")
 
 
@@ -25,9 +25,9 @@ begin
 end
 p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted") #connectivity map
 p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed") #resistance and origin layer map
-p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
-plot(p1,p2, p3)
-savefig("figures/$(Stride)x$(Stride)_$(run)sec_$(best_acc*100)%.png")
+p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(p1,p2,p3)
+# savefig("figures/$(Stride)x$(Stride)_$(run)sec_$(best_acc*100)%.png")
 
 validation_set
 
@@ -45,8 +45,8 @@ check accuracy with:
 model_on_9x9 = trained_model(nine_nine)
 
 #stitch together 27x27 maps
-stitchedmap = stitch(model_on_9x9)
+stitchedmap = stitch4d(model_on_9x9)
 
 #plot
-scatterplotmaps = scatter(stitchedmap[1], validate_connect27x27[1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed", yaxis="predicted")
-plot(heatmap(stitchedmap[1]), heatmap(validate_connect27x27[1]), scatterplotmaps)
+scatterplotmaps = scatter(stitchedmap[56], validate_connect27x27[56], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(heatmap(stitchedmap[56]), heatmap(validate_connect27x27[56]), scatterplotmaps)
