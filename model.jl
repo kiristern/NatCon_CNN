@@ -13,6 +13,12 @@ begin
     print("##########################")
 end
 
+m = Chain(
+    Conv((3,3), 2=>16, pad=(1,1), relu),
+    MaxPool((2,2)),
+    Conv((3,3), 16=>32, pad=(1,1), relu),
+    MaxPool((2,2))
+)
 
 model = Chain(
     #Apply a Conv layer to a 2-channel (R & O layer) input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
@@ -23,9 +29,9 @@ model = Chain(
     MaxPool((2,2)),
 
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, (Int(prod(size(model2[1:4](train_set[1][1])))/batch_size), batch_size)),
+    x -> reshape(x, (Int(prod(size(m[1:4](train_set[1][1])))/batch_size), batch_size)),
 
-     Dense(Int(prod(size(model2[1:4](train_set[1][1])))/batch_size), Stride*Stride),
+     Dense(Int(prod(size(m[1:4](train_set[1][1])))/batch_size), Stride*Stride),
 
     #reshape to match output dimensions
     x -> reshape(x, (Stride, Stride, 1, batch_size))
