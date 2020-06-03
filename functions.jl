@@ -2,6 +2,10 @@
 Functions used in scripts
 =#
 
+#################
+# Preprocessing #
+#################
+
 #Change NaN values to 0
 function nan_to_0(s)
   for j in 1:length(s)
@@ -11,7 +15,49 @@ function nan_to_0(s)
   end
 end
 
+#Create Training dataset
+#Extract 150 random 9x9 resistance, origin, and connectivity layers
+function training_dataset(Resistance, Origin, Connectivity)
+  Random.seed!(1234)
+  maps = []
+  connect = []
+  for i in rand(10:950, 150), j in rand(10:950, 150)
+    #taking groups of matrices of dimensions StridexStride
+    x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
+    x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
+    x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
+    y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
+    if minimum(y) > 0 #predict only when there is connectivity
+      push!(maps, x)
+      push!(connect, y)
+    end
+  end
+  return maps, connect
+end
 
+#create Testing dataset
+function testing_dataset(Resistance, Origin, Connectivity)
+  Random.seed!(5678)
+  test_maps = []
+  test_connect = []
+  for i in rand(10:950, 150), j in rand(10:950, 150)
+    #taking groups of matrices of dimensions StridexStride
+    x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
+    x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
+    x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
+    y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
+    if minimum(y) > 0 #predict only when there is connectivity
+      push!(test_maps, x)
+      push!(test_connect, y)
+    end
+  end
+  return test_maps, test_connect
+end
+
+
+#############
+# Minibatch #
+#############
 #create minibatches
 function make_minibatch(X, Y, idxs)
     X_batch = Array{Float32}(undef, size(X[1])..., length(idxs))
