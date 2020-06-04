@@ -50,3 +50,21 @@ stitchedmap = stitch4d(model_on_9x9)
 scatterplotmaps = scatter(stitchedmap[10], validation_connectivity_map[10], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(heatmap(stitchedmap[10]), heatmap(validation_connectivity_map[10]), scatterplotmaps)
 savefig("figures/original_45x45[10].png")
+
+
+
+
+
+
+
+
+
+
+###### Compare connectivity layers between species #######
+valid_connect_carcajou == valid_connect_cougar
+valid_connect_carcajou == valid_connect_ours
+valid_connect_cougar == valid_connect_ours
+
+all(isapprox.(valid_connect_carcajou, valid_connect_cougar))
+all(isapprox.(valid_connect_carcajou, valid_connect_ours))
+all(isapprox.(valid_connect_cougar, valid_connect_ours))
