@@ -20,7 +20,7 @@ Output:
 
 #read in datafiles
 connectivity_carcajou = readasc("data/maps_for_Kiri/Current_Carcajou.asc")
-connectivity_cougar = readasc("data/maps_for_Kiri/Current_Carcajou.asc")
+connectivity_cougar = readasc("data/maps_for_Kiri/Current_cougar.asc")
 connectivity_ours = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
 
 resistance_carcajou = readasc("data/maps_for_Kiri/Resistance_zone_beta_Carcajou.asc"; nd="NODATA")
