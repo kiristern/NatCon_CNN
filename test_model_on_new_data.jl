@@ -11,7 +11,7 @@ cd(@__DIR__)
 @time include("validation_dataset.jl")
 @time include("minibatch.jl")
 @time include("model.jl")
-@time @load "BSON/overwrite_9x9.bson" params #upload last saved model
+@time @load "BSON/FIRST_ORIGINAL.bson" params #upload last saved model
 Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
 # @time include("train_model.jl")
 @time include("preprocess_idx.jl")
@@ -49,4 +49,4 @@ stitchedmap = stitch4d(model_on_9x9)
 #plot
 scatterplotmaps = scatter(stitchedmap[10], validation_connectivity_map[10], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(heatmap(stitchedmap[10]), heatmap(validation_connectivity_map[10]), scatterplotmaps)
-# savefig("figures/45x45[10].png")
+savefig("figures/original_45x45[10].png")
