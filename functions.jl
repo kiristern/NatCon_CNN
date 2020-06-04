@@ -167,7 +167,7 @@ accuracy(x, y) = 1 - mean(Flux.mse(model(x), y)) # (1 - mse) -> closer to 1 is b
 
 #run trained model on new data
 function trained_model(data9x9)
-  model_on_data = [model(data9x9[i][1]) for i in 1:length(data)]
+  model_on_data = [model(data9x9[i][1]) for i in 1:length(data9x9)]
   return model_on_data
 end
 
