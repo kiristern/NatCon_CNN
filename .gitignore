@@ -1,4 +1,5 @@
 figures/
-BSON/*
-!BSON/FIRST_ORIGINAL.bson
+BSON/9x9.bson
+BSON/12x12_relu.bson
+BSON/r2_9x9.bson
 flux_doc.jl
