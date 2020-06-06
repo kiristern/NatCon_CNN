@@ -1,3 +1,4 @@
+import Pkg; Pkg.activate(".")
 using StatsBase
 using CSV
 using Random
