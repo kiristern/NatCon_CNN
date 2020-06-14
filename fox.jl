@@ -1,12 +1,8 @@
 @time include("libraries.jl")
 @time include("functions.jl") #desired object found in line 23 of preprocess_idx.jl script
-@time include("preprocess.jl")
-@time include("validation_dataset.jl")
-@time include("minibatch.jl")
-@time include("model.jl")
-@time @load "BSON/renard.bson" params #upload last saved model
-Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
-# @time include("test_original_mod_renardroux.jl")
+# @time include("preprocess.jl")
+# @time include("validation_dataset.jl")
+# @time include("minibatch.jl")
 
 
 connectivity_renard = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
@@ -101,14 +97,23 @@ all(isapprox.(c_fox, truemap_fox[1]))
 
 
 
+
+@time include("model.jl")
+@time @load "BSON/fox_full_300samples.bson" params #upload last saved model
+Flux.loadparams!(model, params)
+
 ##### Run model on data #####
 #run trained model on new minibatched data (from )
 model_on_9x9_fox = trained_model(nine_nine_fox)
 
+#if less than 0, = 0; if >1 = 1
+model_on_9x9_zero = replace.(x -> x < 0 ? 0 : x, model_on_9x9_fox)
+model_9x9_fox = replace.(x -> x > 1 ? 1 : x, model_on_9x9_zero)
+
 
 #reduce 4D to 2D
 mod = []
-for t in model_on_9x9_fox
+for t in model_9x9_fox
   tmp2 = [t[:,:,1,i] for i in 1:batch_size]
   push!(mod, tmp2)
 end
@@ -119,10 +124,10 @@ mod = reduce(vcat, mod)
 #hcat groups of three
 stitched_fox = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
 #vcat the stitched hcats
-stitchedmap_fox = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], 139)]
+stitchedmap_fox = [reduce(vcat, p) for p in Iterators.partition(stitched_fox[1:end-1], 139)]
 
 heatmap(stitchedmap_fox[1])
-# savefig("figures/fox_full_300samples.png")
+# savefig("figures/fox_full_300samples_adjusted0-1.png")
 
 
 # s1 = scatter(mod[15000], connect9x9_fox[15000], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
@@ -132,9 +137,9 @@ heatmap(stitchedmap_fox[1])
 
 
 
-difference = c_fox[1:end-9, :] - stitchedmap_fox[1]
+difference = stitchedmap_fox[1] - c_fox[1:end-9, :] #overestimating = 1; underestimating = -1
 heatmap(difference)
-savefig("figures/fox_difference_300samples.png")
+# savefig("figures/fox_difference_300samples_adjusted01.png")
 
 # heatmap(c_fox)
 # savefig("figures/connectivity_fox.png")
