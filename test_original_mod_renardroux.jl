@@ -52,7 +52,7 @@ replicate_y_renard = repeat.(y_idxes_renard, outer = desired)
 #zip coordinates together
 dup_coor_renard = []
 for i in 1:length(replicate_x_renard)
-  zip_dup_renard = Tuple.(zip(replicate_x_renard[i], replicate_y_renard[i])) #y_idxes from preprocess_idx.jl script
+  zip_dup_renard = Tuple.(zip(replicate_x_renard[i], replicate_y_renard[i])) 
   push!(dup_coor_renard, zip_dup_renard)
 end
 
@@ -81,28 +81,33 @@ nine_nine_renard = [make_minibatch(maps9x9_renard, connect9x9_renard, i) for i i
 
 
 ### verify connectivity values are the same ###
-#stitch together 3 (9x9) x 3 (9x9)
-truemap_renard = stitch2d(connect9x9_renard)
-plot(heatmap(truemap_renard[1]), heatmap(valid_connect_map_renard[1]))
+# #stitch together 3 (9x9) x 3 (9x9)
+# truemap_renard = stitch2d(connect9x9_renard)
+# plot(heatmap(truemap_renard[1]), heatmap(valid_connect_map_renard[1]))
+#
+# #compare connectivity layers from minibatching
+# mini_truemap_renard = stitch4d([nine_nine_renard[i][2] for i in eachindex(nine_nine_renard)])
+#
+# #compare all connectivity layers
+# plot(heatmap(truemap_renard[1]), heatmap(valid_connect_map_renard[1]), heatmap(mini_truemap_renard[1]))
+#
+# ### verify non-visually ###
+# #reduce 4D to 2D
+# minib_renard = []
+# for t in [nine_nine_renard[i][2] for i in eachindex(nine_nine_renard)] #for t in each connectivity layer in nine_nine
+#   tmp_renard = [t[:,:,1,i] for i in 1:batch_size]
+#   push!(minib_renard, tmp_renard)
+# end
+# #reduce to single vector
+# minib_renard = reduce(vcat, minib_renard)
+# #check if connectivity of minibatch values are the same as connect
+# all(isapprox.(minib_renard, connect9x9_renard[1:length(minib_renard)]))
 
-#compare connectivity layers from minibatching
-mini_truemap_renard = stitch4d([nine_nine_renard[i][2] for i in eachindex(nine_nine_renard)])
 
-#compare all connectivity layers
-plot(heatmap(truemap_renard[1]), heatmap(valid_connect_map_renard[1]), heatmap(mini_truemap_renard[1]))
 
-### verify non-visually ###
-#reduce 4D to 2D
-minib_renard = []
-for t in [nine_nine_renard[i][2] for i in eachindex(nine_nine_renard)] #for t in each connectivity layer in nine_nine
-  tmp_renard = [t[:,:,1,i] for i in 1:batch_size]
-  push!(minib_renard, tmp_renard)
-end
-#reduce to single vector
-minib_renard = reduce(vcat, minib_renard)
-#check if connectivity of minibatch values are the same as connect
-all(isapprox.(minib_renard, connect9x9_renard[1:length(minib_renard)]))
 
+
+##### Run model on data #####
 #run trained model on new minibatched data (from )
 model_on_9x9_renard = trained_model(nine_nine_renard)
 
@@ -110,6 +115,6 @@ model_on_9x9_renard = trained_model(nine_nine_renard)
 stitchedmap_renard = stitch4d(model_on_9x9_renard)
 
 #plot
-scatterplotmaps_renard = scatter(stitchedmap_renard[70], valid_connect_map_renard[70], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-plot(heatmap(stitchedmap_renard[70]), heatmap(valid_connect_map_renard[70]), scatterplotmaps_renard)
-savefig("figures/original_trained_model_renard[70].png")
+scatterplotmaps_renard = scatter(stitchedmap_renard[10], valid_connect_map_renard[10], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(heatmap(stitchedmap_renard[10]), heatmap(valid_connect_map_renard[10]), scatterplotmaps_renard)
+savefig("figures/2sp_600samp_on_renard[70].png")

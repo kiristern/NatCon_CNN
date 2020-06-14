@@ -80,29 +80,34 @@ nine_nine_ratonlaveur = [make_minibatch(maps9x9_ratonlaveur, connect9x9_ratonlav
 
 
 
-### verify connectivity values are the same ###
-#stitch together 3 (9x9) x 3 (9x9)
-truemap_ratonlaveur = stitch2d(connect9x9_ratonlaveur)
-plot(heatmap(truemap_ratonlaveur[1]), heatmap(valid_connect_map_ratonlaveur[1]))
+# ### verify connectivity values are the same ###
+# #stitch together 3 (9x9) x 3 (9x9)
+# truemap_ratonlaveur = stitch2d(connect9x9_ratonlaveur)
+# plot(heatmap(truemap_ratonlaveur[1]), heatmap(valid_connect_map_ratonlaveur[1]))
+#
+# #compare connectivity layers from minibatching
+# mini_truemap_ratonlaveur = stitch4d([nine_nine_ratonlaveur[i][2] for i in eachindex(nine_nine_ratonlaveur)])
+#
+# #compare all connectivity layers
+# plot(heatmap(truemap_ratonlaveur[1]), heatmap(valid_connect_map_ratonlaveur[1]), heatmap(mini_truemap_ratonlaveur[1]))
+#
+# ### verify non-visually ###
+# #reduce 4D to 2D
+# minib_ratonlaveur = []
+# for t in [nine_nine_ratonlaveur[i][2] for i in eachindex(nine_nine_ratonlaveur)] #for t in each connectivity layer in nine_nine
+#   tmp_ratonlaveur = [t[:,:,1,i] for i in 1:batch_size]
+#   push!(minib_ratonlaveur, tmp_ratonlaveur)
+# end
+# #reduce to single vector
+# minib_ratonlaveur = reduce(vcat, minib_ratonlaveur)
+# #check if connectivity of minibatch values are the same as connect
+# all(isapprox.(minib_ratonlaveur, connect9x9_ratonlaveur[1:length(minib_ratonlaveur)]))
 
-#compare connectivity layers from minibatching
-mini_truemap_ratonlaveur = stitch4d([nine_nine_ratonlaveur[i][2] for i in eachindex(nine_nine_ratonlaveur)])
 
-#compare all connectivity layers
-plot(heatmap(truemap_ratonlaveur[1]), heatmap(valid_connect_map_ratonlaveur[1]), heatmap(mini_truemap_ratonlaveur[1]))
 
-### verify non-visually ###
-#reduce 4D to 2D
-minib_ratonlaveur = []
-for t in [nine_nine_ratonlaveur[i][2] for i in eachindex(nine_nine_ratonlaveur)] #for t in each connectivity layer in nine_nine
-  tmp_ratonlaveur = [t[:,:,1,i] for i in 1:batch_size]
-  push!(minib_ratonlaveur, tmp_ratonlaveur)
-end
-#reduce to single vector
-minib_ratonlaveur = reduce(vcat, minib_ratonlaveur)
-#check if connectivity of minibatch values are the same as connect
-all(isapprox.(minib_ratonlaveur, connect9x9_ratonlaveur[1:length(minib_ratonlaveur)]))
 
+
+#### Run model on data ####
 #run trained model on new minibatched data (from )
 model_on_9x9_ratonlaveur = trained_model(nine_nine_ratonlaveur)
 
@@ -110,6 +115,6 @@ model_on_9x9_ratonlaveur = trained_model(nine_nine_ratonlaveur)
 stitchedmap_ratonlaveur = stitch4d(model_on_9x9_ratonlaveur)
 
 #plot
-scatterplotmaps_ratonlaveur = scatter(stitchedmap_ratonlaveur[70], valid_connect_map_ratonlaveur[70], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-plot(heatmap(stitchedmap_ratonlaveur[70]), heatmap(valid_connect_map_ratonlaveur[70]), scatterplotmaps_ratonlaveur)
-savefig("figures/original_trained_model_ratonlaveur[70].png")
+scatterplotmaps_ratonlaveur = scatter(stitchedmap_ratonlaveur[56], valid_connect_map_ratonlaveur[56], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(heatmap(stitchedmap_ratonlaveur[56]), heatmap(valid_connect_map_ratonlaveur[56]), scatterplotmaps_ratonlaveur)
+savefig("figures/2sp_600samples_on_ratonlaveur[56].png")
