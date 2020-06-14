@@ -40,7 +40,7 @@ Stride = 9
 
 maps = []
 connect = []
-for i in rand(10:950, 150), j in rand(10:950, 150)
+for i in rand(10:950, 150), j in rand(10:950, 150) #TODO: try sampling from entire map ?
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]

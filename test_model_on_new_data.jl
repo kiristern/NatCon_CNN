@@ -11,9 +11,8 @@ cd(@__DIR__)
 @time include("validation_dataset.jl")
 @time include("minibatch.jl")
 @time include("model.jl")
-@time @load "BSON/FIRST_ORIGINAL.bson" params #upload last saved model
+@time @load "BSON/2sp_original_ratonlaveur_300samples.bson" params #upload last saved model
 Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
-# @time include("train_model.jl")
 @time include("preprocess_idx.jl")
 
 
@@ -27,7 +26,7 @@ p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted") #connectivity map
 p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed") #resistance and origin layer map
 p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(p1,p2,p3)
-# savefig("figures/$(Stride)x$(Stride)_$(run)sec_$(best_acc*100)%.png")
+savefig("figures/2sp_orig_rl_600samples_$(run)sec_$(best_acc*100)%.png")
 
 
 #=
@@ -47,9 +46,9 @@ model_on_9x9 = trained_model(nine_nine)
 stitchedmap = stitch4d(model_on_9x9)
 
 #plot
-scatterplotmaps = scatter(stitchedmap[10], validation_connectivity_map[10], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-plot(heatmap(stitchedmap[10]), heatmap(validation_connectivity_map[10]), scatterplotmaps)
-savefig("figures/original_45x45[10].png")
+scatterplotmaps = scatter(stitchedmap[70], validation_connectivity_map[70], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(heatmap(stitchedmap[70]), heatmap(validation_connectivity_map[70]), scatterplotmaps)
+# savefig("figures/2sp_orig_rl_300samples_45x45[70].png")
 
 
 

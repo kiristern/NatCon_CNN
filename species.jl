@@ -16,6 +16,7 @@ Output:
 
 include("libraries.jl")
 include("functions.jl")
+include("model.jl")
 # cd(@__DIR__)
 
 #read in datafiles
@@ -55,6 +56,7 @@ batch_size = 32
 
 #carcajou
 maps_carcajou, connect_carcajou, test_maps_carcajou, test_connect_carcajou = make_datasets(resistance_carcajou, Origin, connectivity_carcajou)
+
 
 train_maps_carcajou, train_connect_carcajou, valid_maps_carcajou, valid_connect_carcajou = partition_dataset(maps_carcajou, connect_carcajou)
 
