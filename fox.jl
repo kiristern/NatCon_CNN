@@ -96,8 +96,8 @@ nine_nine_fox = [make_minibatch(maps9x9_fox, connect9x9_fox, i) for i in mb_idxs
 ### verify connectivity values are the same ###
 truemap = [reduce(hcat, p) for p in Iterators.partition(connect9x9_fox, Desired_x)]
 truemap_fox = [reduce(vcat, p) for p in Iterators.partition(truemap, Desired_y)]
-heatmap(truemap_fox[1])
-
+# heatmap(truemap_fox[1])
+all(isapprox.(c_fox, truemap_fox[1]))
 
 
 
@@ -117,13 +117,24 @@ mod = reduce(vcat, mod)
 
 # remove_last = rem(length(mod), 9)
 #hcat groups of three
-stitched = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
+stitched_fox = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
 #vcat the stitched hcats
-stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], 139)]
+stitchedmap_fox = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], 139)]
 
-heatmap(stitchedmap[1])
+heatmap(stitchedmap_fox[1])
+# savefig("figures/fox_full_300samples.png")
 
-s1 = scatter(mod[12100], connect9x9_fox[12100], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-p1 = heatmap(mod[12100])
-p2 = heatmap(connect9x9_fox[12100])
-plot(p1,p2,s1)
+
+# s1 = scatter(mod[15000], connect9x9_fox[15000], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+# p1 = heatmap(mod[15000])
+# p2 = heatmap(connect9x9_fox[15000])
+# plot(p1,p2,s1)
+
+
+
+difference = c_fox[1:end-9, :] - stitchedmap_fox[1]
+heatmap(difference)
+savefig("figures/fox_difference_300samples.png")
+
+# heatmap(c_fox)
+# savefig("figures/connectivity_fox.png")
