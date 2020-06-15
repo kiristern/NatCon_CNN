@@ -20,7 +20,7 @@ m = Chain(
     MaxPool((2,2))
 )
 
-undefvar = Array{Float32}(undef, 9, 9, 2, 32)
+inputlayersize = Array{Float32}(undef, 9, 9, 2, 32)
 
 model = Chain(
     #Apply a Conv layer to a 2-channel (R & O layer) input using a 2x2 window size, giving a 16-channel output. Output is activated by relu
@@ -31,9 +31,9 @@ model = Chain(
     MaxPool((2,2)),
 
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, (Int(prod(size(m[1:4](undefvar)))/batch_size), batch_size)),
+    x -> reshape(x, (Int(prod(size(m[1:4](inputlayersize)))), batch_size)),
 
-     Dense(Int(prod(size(m[1:4](undefvar)))/batch_size), Stride*Stride),
+     Dense(Int(prod(size(m[1:4](inputlayersize)))/batch_size), Stride*Stride),
 
     #reshape to match output dimensions
     x -> reshape(x, (Stride, Stride, 1, batch_size))
