@@ -24,15 +24,13 @@ model(train_set[1][1])[:, :, 1, 32] #see last output
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
 opt = ADAM(0.001)
-
-
+best_acc = 0.0
+last_improvement = 0
 begin
     print("#################################")
     print("## Beginning training loop...  ##")
     print("#################################")
 end
-best_acc = 0.0
-last_improvement = 0
 run = @time @elapsed for epoch_idx in 1:200
     global best_acc, last_improvement
     # Train for a single epoch
