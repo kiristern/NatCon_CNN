@@ -1,8 +1,5 @@
 @time include("libraries.jl")
 @time include("functions.jl") #desired object found in line 23 of preprocess_idx.jl script
-# @time include("preprocess.jl")
-# @time include("validation_dataset.jl")
-# @time include("minibatch.jl")
 
 
 connectivity_renard = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
@@ -32,18 +29,6 @@ for i in CartesianIndices(c_fox)
 end
 all_coord = Tuple.(all_coord)
 
-# #get starting coordinates for each 9x9
-# y_coor = unique(first.(all_coord))[1:Stride:end]
-# x_coor = unique(last.(all_coord))[1:Stride:end]
-# y_start_coords = repeat(y_coor, outer = Desired_x)
-# x_start_coords = repeat(x_coor, inner = Desired_y)
-
-# coordinates_fox = []
-# for i in 1:length(y_start_coords)
-#   zip_renard = Tuple.(zip(y_start_coords[i], x_start_coords[i]))
-#   push!(coordinates_fox, zip_renard)
-# end
-# last(coordinates_fox)
 
 #create range around first coordinate
 first_coor = first(all_coord)
@@ -127,7 +112,7 @@ stitched_fox = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
 stitchedmap_fox = [reduce(vcat, p) for p in Iterators.partition(stitched_fox[1:end-1], 139)]
 
 heatmap(stitchedmap_fox[1])
-# savefig("figures/fox_full_300samples_adjusted0-1.png")
+# savefig("figures/fox_sliding_window_adjusted0-1.png")
 
 
 # s1 = scatter(mod[15000], connect9x9_fox[15000], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
@@ -139,7 +124,7 @@ heatmap(stitchedmap_fox[1])
 
 difference = stitchedmap_fox[1] - c_fox[1:end-9, :] #overestimating = 1; underestimating = -1
 heatmap(difference)
-# savefig("figures/fox_difference_300samples_adjusted01.png")
+# savefig("figures/fox_difference_slidingwindow_adjusted01.png")
 
 # heatmap(c_fox)
 # savefig("figures/connectivity_fox.png")

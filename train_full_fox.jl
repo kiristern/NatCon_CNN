@@ -58,7 +58,7 @@ test_connect_fox
 Random.seed!(1234)
 train_maps_fox, train_connect_fox, valid_maps_fox, valid_connect_fox = partition_dataset(maps_fox, connect_fox)
 
-
+batch_size=32
 train_set_fox, validation_set_fox = make_sets(train_maps_fox, train_connect_fox, valid_maps_fox, valid_connect_fox)
 
 
