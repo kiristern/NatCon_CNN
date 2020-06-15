@@ -64,7 +64,7 @@ for (i,j) in zip_fox
 end
 
 
-
+batch_size=32
 ### minibatch ###
 #subtract remainders to ensure all minibatches are the same length
 droplast9x9_fox = rem(length(maps9x9_fox), batch_size)
@@ -84,7 +84,7 @@ all(isapprox.(c_fox, truemap_fox[1]))
 
 
 @time include("model.jl")
-@time @load "BSON/fox_full_300samples.bson" params #upload last saved model
+@time @load "BSON/fox_sliding_window.bson" params #upload last saved model
 Flux.loadparams!(model, params)
 
 ##### Run model on data #####
