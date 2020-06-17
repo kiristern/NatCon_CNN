@@ -120,7 +120,7 @@ heatmap(stitchedmap_fox[1])
 # p2 = heatmap(connect9x9_fox[15000])
 # plot(p1,p2,s1)
 
-
+scatter(stitchedmap_fox[1], c_fox[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 
 difference = stitchedmap_fox[1] - c_fox[1:end-9, :] #overestimating = 1; underestimating = -1
 heatmap(difference)
