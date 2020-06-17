@@ -31,7 +31,7 @@ model = Chain(
     MaxPool((2,2)),
 
     #flatten from 3D tensor to a 2D one, suitable for dense layer and training
-    x -> reshape(x, (Int(prod(size(m[1:4](inputlayersize)))), batch_size)),
+    x -> reshape(x, (Int(prod(size(m[1:4](inputlayersize)))/batch_size), batch_size)),
 
      Dense(Int(prod(size(m[1:4](inputlayersize)))/batch_size), Stride*Stride),
 
@@ -40,11 +40,11 @@ model = Chain(
 )
 
 #View layer outputs
-# model[1](train_set[1][1]) #layer 1: 9x9x16x32
-# model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
-# model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
-# model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
-# # reshape layer
-# model[1:5](train_set[1][1]) #layer 5: 128x32
-# model[1:6](train_set[1][1]) #layer 6: 81x32
-# model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
+model[1](train_set[1][1]) #layer 1: 9x9x16x32
+model[1:2](train_set[1][1]) #layer 2: 4x4x16x32
+model[1:3](train_set[1][1]) #layer 3: 4x4x32x32
+model[1:4](train_set[1][1]) #layer 4: 2x2x32x32
+# reshape layer
+model[1:5](train_set[1][1]) #layer 5: 128x32
+model[1:6](train_set[1][1]) #layer 6: 81x32
+model[1:7](train_set[1][1]) #layer 7: 9x9x1x32
