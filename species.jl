@@ -75,7 +75,7 @@ train_set_cougar, validation_set_cougar = make_sets(train_maps_cougar, train_con
 
 
 #ours noir
-maps_ours, connect_ours, test_maps_ours, test_connect_ours = make_datasets(resistance_cougar, Origin, connectivity_ours)
+maps_ours, connect_ours, test_maps_ours, test_connect_ours = make_datasets(resistance_ours, Origin, connectivity_ours)
 
 train_maps_ours, train_connect_ours, valid_maps_ours, valid_connect_ours = partition_dataset(maps_ours, connect_ours)
 
