@@ -31,44 +31,13 @@ nan_to_0(Connectivity)
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
 Stride = 9
+batch_size = 32
 Random.seed!(1234)
 
-maps = []
-connect = []
-for i in rand(1:size(Connectivity,2)-Stride, 150), j in rand(1:size(Connectivity,2)-Stride, 150)
-  #taking groups of matrices of dimensions StridexStride
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
-  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  # if minimum(y) > 0 #predict only when there is connectivity
-    push!(maps, x)
-    push!(connect, y)
-  # end
-end
+maps, connect, test_maps, test_connect = make_datasets(Resistance, Origin, Connectivity)
 
-#create Testing dataset
-Random.seed!(5678)
-
-test_maps = []
-test_connect = []
-for i in rand(1:size(Connectivity,2)-Stride, 150), j in rand(1:size(Connectivity,2)-Stride, 150)
-  #taking groups of matrices of dimensions StridexStride
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
-  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  # if minimum(y) > 0 #predict only when there is connectivity
-    push!(test_maps, x)
-    push!(test_connect, y)
-  # end
-end
-
-
-Random.seed!(1234)
 train_maps, train_connect, valid_maps, valid_connect = partition_dataset(maps, connect)
 
-batch_size=32
 train_set, validation_set = make_sets(train_maps, train_connect, valid_maps, valid_connect)
 
 #TODO: run train_model.jl
@@ -80,6 +49,9 @@ p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="observed") #resistanc
 p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(p1,p2,p3)
 savefig("figures/fullblackbear_$(run)sec_$(best_acc*100)%.png")
+
+
+
 
 
 #### For full map ####
@@ -181,17 +153,17 @@ stitched = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
 #vcat the stitched hcats
 stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], 139)]
 
-heatmap(stitchedmap[1])
-# savefig("figures/fox_sliding_window_adjusted0-1.png")
+originalmap = heatmap(c)
 
+fullmap = heatmap(stitchedmap[1])
+# savefig("figures/bear_model.png")
 
-# s1 = scatter(mod[15000], connect9x9_fox[15000], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-# p1 = heatmap(mod[15000])
-# p2 = heatmap(connect9x9_fox[15000])
-# plot(p1,p2,s1)
-
-scatter(stitchedmap[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+scat = scatter(stitchedmap[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+# savefig("figures/scatter_bear_model.png")
 
 difference = stitchedmap[1] - c[1:end-9, :] #overestimating = 1; underestimating = -1
-heatmap(difference)
-# savefig("figures/fox_difference_slidingwindow_adjusted01.png")
+dif = heatmap(difference)
+# savefig("figures/difference_bear_model.png")
+
+plot(originalmap, fullmap, scat, dif)
+# savefig("figures/comparisons_bear.png")
