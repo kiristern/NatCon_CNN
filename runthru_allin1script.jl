@@ -14,8 +14,9 @@ Output:
 =#
 
 
-# include("libraries.jl")
-# include("functions.jl")
+include("libraries.jl")
+include("functions.jl")
+include("model.jl")
 # cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
@@ -29,21 +30,21 @@ nan_to_0(Connectivity)
 
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
-Random.seed!(1234)
 Stride = 9
+Random.seed!(1234)
 
 maps = []
 connect = []
-for i in rand(10:950, 150), j in rand(10:950, 150) #TODO: try sampling from entire map ?
+for i in rand(1:size(Connectivity,2)-Stride, 150), j in rand(1:size(Connectivity,2)-Stride, 150)
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
   x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
   y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
+  # if minimum(y) > 0 #predict only when there is connectivity
     push!(maps, x)
     push!(connect, y)
-  end
+  # end
 end
 
 #create Testing dataset
@@ -51,46 +52,34 @@ Random.seed!(5678)
 
 test_maps = []
 test_connect = []
-for i in rand(10:950, 150), j in rand(10:950, 150)
+for i in rand(1:size(Connectivity,2)-Stride, 150), j in rand(1:size(Connectivity,2)-Stride, 150)
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
   x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
   y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  if minimum(y) > 0 #predict only when there is connectivity
+  # if minimum(y) > 0 #predict only when there is connectivity
     push!(test_maps, x)
     push!(test_connect, y)
-  end
+  # end
 end
 
-#script returns:
-maps
-connect
-test_maps
-test_connect
 
 Random.seed!(1234)
 train_maps, train_connect, valid_maps, valid_connect = partition_dataset(maps, connect)
 
-batch_size = 32 # The CNN only "sees" 32 images at each training cycle
+batch_size=32
+train_set, validation_set = make_sets(train_maps, train_connect, valid_maps, valid_connect)
 
-#subtract remainders to ensure all minibatches are the same length
-droplast = rem(length(train_maps), batch_size)
-mb_idxs = Iterators.partition(1:length(train_maps)-droplast, batch_size)
-#train set in the form of batches
-train_set = [make_minibatch(train_maps, train_connect, i) for i in mb_idxs]
+#TODO: run train_model.jl
 
 
-droplast2 = rem(length(valid_maps), batch_size)
-mb_idxs2 = Iterators.partition(1:length(valid_maps)-droplast2, batch_size)
-#prepare validation set as one giant minibatch
-validation_set = [make_minibatch(valid_maps, valid_connect, i) for i in mb_idxs2]
-
-p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted") #connectivity map
-p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed") #resistance and origin layer map
-p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+# Plot
+p1 = heatmap(validation_set[1][2][:,:,1,32], title="predicted") #connectivity map
+p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="observed") #resistance and origin layer map
+p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(p1,p2,p3)
-savefig("figures/bear_usingoriginalscript_$(run)sec_$(best_acc*100)%.png")
+savefig("figures/fullblackbear_$(run)sec_$(best_acc*100)%.png")
 
 
 #### For full map ####
@@ -127,8 +116,8 @@ x_idxes = x_idx[1:Stride:end]
 y_idxes = y_idx[1:Stride:end]
 
 #get the 9 starting coordinates
-replicate_x = repeat(x_idxes, inner = 134)
-replicate_y = repeat(y_idxes, outer = 139)
+replicate_x = repeat(x_idxes, inner = length(y_idxes))
+replicate_y = repeat(y_idxes, outer = length(x_idxes))
 
 #zip coordinates together
 zip_coor = Tuple.(zip(replicate_x, replicate_y))
@@ -165,8 +154,8 @@ all(isapprox.(c, truemap[1]))
 
 
 # @time include("model.jl")
-# @time @load "BSON/fox_sliding_window.bson" params #upload last saved model
-# Flux.loadparams!(model, params)
+@time @load "BSON/full_blackbear_849sec_9890acc.bson" params #upload last saved model
+Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
 
 ##### Run model on data #####
 #run trained model on new minibatched data (from )

@@ -44,8 +44,8 @@ x_idxes_fox = x_idx_fox[1:Stride:end]
 y_idxes_fox = y_idx_fox[1:Stride:end]
 
 #get the 9 starting coordinates
-replicate_x_fox = repeat(x_idxes_fox, inner = 134)
-replicate_y_fox = repeat(y_idxes_fox, outer = 139)
+replicate_x_fox = repeat(x_idxes_fox, inner = length(y_idxes_fox))
+replicate_y_fox = repeat(y_idxes_fox, outer = length(x_idxes_fox))
 
 #zip coordinates together
 zip_fox = Tuple.(zip(replicate_x_fox, replicate_y_fox))
