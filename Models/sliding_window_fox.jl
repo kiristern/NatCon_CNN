@@ -1,3 +1,5 @@
+# I DON'T THINK I ACTUALLY RAN A SLIDING WINDOW..... CHECK THRU THIS AGAIN AND VERIFY.
+
 @time include("libraries.jl")
 @time include("functions.jl") #desired object found in line 23 of preprocess_idx.jl script
 

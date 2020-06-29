@@ -1,5 +1,5 @@
-@time include("libraries.jl")
-@time include("functions.jl") #desired object found in line 23 of preprocess_idx.jl script
+@time include("originalScripts/libraries.jl")
+@time include("originalScripts/functions.jl") #desired object found in line 23 of preprocess_idx.jl script
 
 
 connectivity_renard = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
