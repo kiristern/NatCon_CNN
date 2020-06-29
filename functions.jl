@@ -29,30 +29,30 @@ function make_datasets(Resistance, Origin, Connectivity)
   Random.seed!(1234)
   maps = []
   connect = []
-  for i in rand(10:950, 150), j in rand(10:950, 150)
+  for i in rand(1:size(Connectivity,2)-Stride, 300), j in rand(1:size(Connectivity,2)-Stride, 300)
     #taking groups of matrices of dimensions StridexStride
     x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
     x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
     x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
     y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-    if minimum(y) > 0 #predict only when there is connectivity
+    #if minimum(y) > 0 #predict only when there is connectivity
       push!(maps, x)
       push!(connect, y)
-    end
+    #end
   end
 #create Testing dataset
   Random.seed!(5678)
   test_maps = []
   test_connect = []
-  for i in rand(10:950, 150), j in rand(10:950, 150)
+  for i in rand(1:size(Connectivity,2)-Stride, 300), j in rand(1:size(Connectivity,2)-Stride, 300)
     x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
     x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
     x = cat(x_res, x_or, dims=3)
     y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)]
-    if minimum(y) > 0
+    #if minimum(y) > 0
       push!(test_maps, x)
       push!(test_connect, y)
-    end
+    #end
   end
   return maps, connect, test_maps, test_connect
 end
