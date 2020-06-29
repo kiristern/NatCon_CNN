@@ -16,7 +16,6 @@ Output:
 
 include("libraries.jl")
 include("functions.jl")
-include("model.jl")
 # cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
@@ -24,9 +23,11 @@ Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd=
 Origin = readasc("data/input/origin.asc"; nd="NODATA")
 Connectivity = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
 
-nan_to_0(Resistance)
-nan_to_0(Origin)
-nan_to_0(Connectivity)
+begin
+  nan_to_0(Resistance)
+  nan_to_0(Origin)
+  nan_to_0(Connectivity)
+end
 
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
