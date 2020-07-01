@@ -21,7 +21,7 @@ include("model.jl")
 
 #read in datafiles
 connectivity_carcajou = readasc("data/maps_for_Kiri/Current_Carcajou.asc")
-connectivity_cougar = readasc("data/maps_for_Kiri/Current_cougar.asc")
+connectivity_cougar = readasc("data/maps_for_Kiri/Current_Cougar.asc")
 connectivity_ours = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
 connectivity_renard = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
 connectivity_ratonlaveur = readasc("data/maps_for_Kiri/RL_cum_currmap.asc")
@@ -76,6 +76,8 @@ train_set_cougar, validation_set_cougar = make_sets(train_maps_cougar, train_con
 
 #ours noir
 maps_ours, connect_ours, test_maps_ours, test_connect_ours = make_datasets(resistance_ours, Origin, connectivity_ours)
+
+
 
 train_maps_ours, train_connect_ours, valid_maps_ours, valid_connect_ours = partition_dataset(maps_ours, connect_ours)
 
