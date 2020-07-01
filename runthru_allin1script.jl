@@ -41,6 +41,7 @@ train_maps, train_connect, valid_maps, valid_connect = partition_dataset(maps, c
 
 train_set, validation_set = make_sets(train_maps, train_connect, valid_maps, valid_connect)
 
+include("model.jl")
 #TODO: run train_model.jl
 
 
@@ -49,7 +50,7 @@ p1 = heatmap(validation_set[1][2][:,:,1,32], title="predicted") #connectivity ma
 p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="observed") #resistance and origin layer map
 p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(p1,p2,p3)
-savefig("figures/fullblackbear_$(run)sec_$(best_acc*100)%.png")
+savefig("figures/fullblackbear_test_$(run)sec_$(best_acc*100)%.png")
 
 
 

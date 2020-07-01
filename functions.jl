@@ -29,7 +29,7 @@ function make_datasets(Resistance, Origin, Connectivity)
   Random.seed!(1234)
   maps = []
   connect = []
-  for i in rand(1:size(Connectivity,2)-Stride, 150), j in rand(1:size(Connectivity,2)-Stride, 150)
+  for i in rand(1:size(Origin,2)-Stride, 150), j in rand(1:size(Origin,2)-Stride, 150)
     #taking groups of matrices of dimensions StridexStride
     x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
     x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
@@ -44,7 +44,7 @@ function make_datasets(Resistance, Origin, Connectivity)
   Random.seed!(5678)
   test_maps = []
   test_connect = []
-  for i in rand(1:size(Connectivity,2)-Stride, 150), j in rand(1:size(Connectivity,2)-Stride, 150)
+  for i in rand(1:size(Origin,2)-Stride, 150), j in rand(1:size(Origin,2)-Stride, 150)
     x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
     x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
     x = cat(x_res, x_or, dims=3)
