@@ -7,6 +7,7 @@ Create and train a model
 # cd(@__DIR__)
 include("libraries.jl")
 include("functions.jl")
+include("Models/species.jl")
 include("Models/multi_sp.jl")
 # include("preprocess.jl")
 # include("validation_dataset.jl")
