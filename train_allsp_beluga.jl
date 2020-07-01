@@ -264,7 +264,7 @@ end
 #read in datafiles
 connectivity_carcajou = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_Carcajou.asc")
 connectivity_cougar = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_Cougar.asc")
-connectivity_ours = readasc("d/home/kstern/GitHub/NatCon_CNN/ata/maps_for_Kiri/Current_OursNoir.asc")
+connectivity_ours = readasc("d/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_OursNoir.asc")
 connectivity_renard = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/RR_cum_currmap.asc")
 connectivity_ratonlaveur = readasc("GitHub/NatCon_CNN/data/maps_for_Kiri/RL_cum_currmap.asc")
 
