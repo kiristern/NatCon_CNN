@@ -262,20 +262,20 @@ end
 
 
 #read in datafiles
-connectivity_carcajou = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_Carcajou.asc")
-connectivity_cougar = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_cougar.asc")
-connectivity_ours = readasc("d$HOME/GitHub/NatCon_CNN/ata/maps_for_Kiri/Current_OursNoir.asc")
-connectivity_renard = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/RR_cum_currmap.asc")
-connectivity_ratonlaveur = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/RL_cum_currmap.asc")
+connectivity_carcajou = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_Carcajou.asc")
+connectivity_cougar = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Current_cougar.asc")
+connectivity_ours = readasc("d/home/kstern/GitHub/NatCon_CNN/ata/maps_for_Kiri/Current_OursNoir.asc")
+connectivity_renard = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/RR_cum_currmap.asc")
+connectivity_ratonlaveur = readasc("GitHub/NatCon_CNN/data/maps_for_Kiri/RL_cum_currmap.asc")
 
-resistance_carcajou = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_Carcajou.asc"; nd="NODATA")
-resistance_cougar = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_Cougar.asc"; nd="NODATA")
-resistance_ours = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
-resistance_coyote = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_Coyote.asc"; nd="NODATA")
-resistance_renard = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_RR.asc"; nd="NODATA")
-resistance_ratonlaveur = readasc("$HOME/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_RL.asc"; nd="NODATA")
+resistance_carcajou = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_Carcajou.asc"; nd="NODATA")
+resistance_cougar = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_Cougar.asc"; nd="NODATA")
+resistance_ours = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
+resistance_coyote = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_Coyote.asc"; nd="NODATA")
+resistance_renard = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_RR.asc"; nd="NODATA")
+resistance_ratonlaveur = readasc("/home/kstern/GitHub/NatCon_CNN/data/maps_for_Kiri/Resistance_zone_beta_RL.asc"; nd="NODATA")
 
-Origin = readasc("$HOME/GitHub/NatCon_CNN/data/input/origin.asc"; nd="NODATA")
+Origin = readasc("/home/kstern/GitHub/NatCon_CNN/data/input/origin.asc"; nd="NODATA")
 
 #convert NaN to zero
 begin
