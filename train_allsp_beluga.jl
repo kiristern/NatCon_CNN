@@ -1,3 +1,9 @@
+begin
+    print("##########################")
+    print("## loading libraries...##")
+    print("##########################")
+end
+
 using StatsBase
 using CSV
 using Random
@@ -19,9 +25,14 @@ end
 Functions used in scripts
 =#
 
-#################
-# Preprocessing #
-#################
+
+begin
+    print("##########################")
+    print("## loading functions...##")
+    print("##########################")
+end
+
+
 
 #Change NaN values to 0
 function nan_to_0(s)
@@ -33,10 +44,6 @@ function nan_to_0(s)
 end
 
 
-
-#####################
-# Creating datasets #
-#####################
 
 #=
 Create Training and Testing datasets
@@ -212,6 +219,14 @@ function stitch4d(model_on_9x9)
   return stitchedmap[1:length(stitchedmap)-1]
 end
 
+
+begin
+    print("##########################")
+    print("## importing data...##")
+    print("##########################")
+end
+
+
 #read in datafiles
 connectivity_carcajou = readasc("data/maps_for_Kiri/Current_Carcajou.asc")
 connectivity_cougar = readasc("data/maps_for_Kiri/Current_cougar.asc")
@@ -243,6 +258,13 @@ begin
   nan_to_0(resistance_ratonlaveur)
   nan_to_0(Origin)
 end
+
+begin
+    print("##########################")
+    print("## preprocessing data...##")
+    print("##########################")
+end
+
 
 Stride = 9
 batch_size = 32
@@ -328,6 +350,11 @@ model = Chain(
     x -> reshape(x, (Stride, Stride, 1, batch_size))
 )
 
+begin
+    print("##########################")
+    print("## load on GPU...##")
+    print("##########################")
+end
 
 # Load model and datasets onto GPU, if enabled
 train_set = gpu.(train_set_multisp)
@@ -337,7 +364,11 @@ model = gpu(model)
 # Make sure our model is nicely precompiled before starting our training loop
 # model(train_set[1][1])
 # model(train_set[1][1])[:, :, 1, 32] #see last output
-
+begin
+    print("##########################")
+    print("## define optimizer, best acc and last improvement...##")
+    print("##########################")
+end
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
 opt = ADAM(0.001)
