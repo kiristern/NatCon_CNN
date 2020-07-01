@@ -416,7 +416,7 @@ end
 run = @time @elapsed for epoch_idx in 1:200
     global best_acc, last_improvement
     # Train for a single epoch
-    Flux.train!(loss, params(model), train_set_multisp, opt)
+    Flux.train!(loss, params(model), train_set, opt)
 
     #Terminate on NaN
     if anynan(paramvec(model))
@@ -425,7 +425,7 @@ run = @time @elapsed for epoch_idx in 1:200
     end
 
     # Calculate accuracy of model to validation set:
-    acc = mean([accuracy(x, y) for (x, y) in validation_set_multisp]) #separating validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
+    acc = mean([accuracy(x, y) for (x, y) in validation_set]) #separating validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
     @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
 
     # If our accuracy is good enough, quit out.
@@ -437,7 +437,7 @@ run = @time @elapsed for epoch_idx in 1:200
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to BSON")
-        BSON.@save joinpath(dirname(@__FILE__), "BSON/allspecies.bson") #= TODO: make sure to change file name when training new model! =# params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/allspecies_GPU.bson") #= TODO: make sure to change file name when training new model! =# params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
