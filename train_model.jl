@@ -7,19 +7,19 @@ Create and train a model
 # cd(@__DIR__)
 include("libraries.jl")
 include("functions.jl")
-include("preprocess.jl")
-include("validation_dataset.jl")
-include("minibatch.jl")
+# include("preprocess.jl")
+# include("validation_dataset.jl")
+# include("minibatch.jl")
 include("model.jl")
 
 # Load model and datasets onto GPU, if enabled
-train_set = gpu.(train_set)
-validation_set = gpu.(validation_set)
+train_set = gpu.(train_set_multisp)
+validation_set = gpu.(validation_set_multisp)
 model = gpu(model)
 
 # Make sure our model is nicely precompiled before starting our training loop
-model(train_set[1][1])
-model(train_set[1][1])[:, :, 1, 32] #see last output
+# model(train_set[1][1])
+# model(train_set[1][1])[:, :, 1, 32] #see last output
 
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
@@ -34,7 +34,7 @@ end
 run = @time @elapsed for epoch_idx in 1:200
     global best_acc, last_improvement
     # Train for a single epoch
-    Flux.train!(loss, params(model), train_set, opt)
+    Flux.train!(loss, params(model), train_set_multisp, opt)
 
     #Terminate on NaN
     if anynan(paramvec(model))
@@ -43,7 +43,7 @@ run = @time @elapsed for epoch_idx in 1:200
     end
 
     # Calculate accuracy of model to validation set:
-    acc = mean([accuracy(x, y) for (x, y) in validation_set]) #separating validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
+    acc = mean([accuracy(x, y) for (x, y) in validation_set_multisp]) #separating validation set tuple into the input and outputs & checking the accuracy between x and y; then getting mean
     @info(@sprintf("[%d]: Test accuracy: %.4f", epoch_idx, acc))
 
     # If our accuracy is good enough, quit out.
@@ -55,7 +55,7 @@ run = @time @elapsed for epoch_idx in 1:200
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to BSON")
-        BSON.@save joinpath(dirname(@__FILE__), "BSON/justatest.bson") #= TODO: make sure to change file name when training new model! =# params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/allspecies.bson") #= TODO: make sure to change file name when training new model! =# params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
