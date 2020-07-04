@@ -1,6 +1,5 @@
 # import Pkg; Pkg.activate(".") #must uncomment if trying to train, otherwise if uploading saved bson files, do not run
 using StatsBase
-using CSV
 using Random
 using Flux, Statistics
 using Flux: onecold, crossentropy

@@ -14,17 +14,20 @@ Output:
 =#
 
 
-# include("libraries.jl")
-# include("functions.jl")
+include("libraries.jl")
+include("functions.jl")
 # cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
-resistance = CSV.read("data/resistance.csv")
-origin = CSV.read("data/origin.csv")
-connectivity = CSV.read("data/connectivity.csv", delim="\t")
-Resistance = convert(Matrix, resistance)
-Origin = convert(Matrix, origin)
-Connectivity = convert(Matrix, connectivity)
+Resistance = readasc("data/input/resistance.asc"; nd="NODATA")
+Origin = readasc("data/input/origin.asc"; nd="NODATA")
+Connectivity = readasc("data/output/connectivity.asc")
+
+begin
+  nan_to_0(Resistance)
+  nan_to_0(Origin)
+  nan_to_0(Connectivity)
+end
 
 #remove last row in Resistance to get same size as Origin and Connectivity
 Resistance = Resistance[1:end-1, :]
