@@ -76,3 +76,15 @@ run = @time @elapsed for epoch_idx in 1:200
         break
     end
 end
+
+#have a look of trained model performance
+begin
+    print("##################")
+    print("## Plotting...  ##")
+    print("##################")
+end
+p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted") #connectivity map
+p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed") #resistance and origin layer map
+p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+plot(p1,p2,p3)
+savefig("figures/$(run)sec_$(best_acc*100)%.png")
