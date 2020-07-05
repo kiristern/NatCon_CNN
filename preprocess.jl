@@ -18,7 +18,7 @@ include("libraries.jl")
 include("functions.jl")
 # cd(@__DIR__)
 
-#Read in the CSV (comma separated values) file and convert them to arrays.
+#Read in the data
 Resistance = readasc("data/input/resistance.asc"; nd="NODATA")
 Origin = readasc("data/input/origin.asc"; nd="NODATA")
 Connectivity = readasc("data/output/connectivity.asc")
@@ -28,13 +28,6 @@ begin
   nan_to_0(Origin)
   nan_to_0(Connectivity)
 end
-
-#remove last row in Resistance to get same size as Origin and Connectivity
-Resistance = Resistance[1:end-1, :]
-
-nan_to_0(Resistance)
-nan_to_0(Origin)
-nan_to_0(Connectivity)
 
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
