@@ -179,9 +179,12 @@ Flux.loadparams!(model, params) #new model will now be identical to the one save
 #run trained model on new minibatched data (from )
 @time model_on_9x9 = trained_model(nine_nine)
 
+#if less than 0, = 0
+model_9x9 = replace.(x -> x < 0 ? 0 : x, model_on_9x9)
+
 #reduce 4D to 2D
 mod = []
-for t in model_on_9x9
+for t in model_9x9
   tmp2 = [t[:,:,1,i] for i in 1:batch_size]
   push!(mod, tmp2)
 end
