@@ -206,12 +206,6 @@ map_scale = (stitchedmap[1] .- minimum(stitchedmap[1])) ./ (maximum(map_scale) .
 minimum(map_scale)
 maximum(map_scale)
 
-#MWE
-# X = [0.0 -0.5 0.5; 0.0 1.0 2.0]
-# standardize(UnitRangeTransform, X, dims=2) #doesn't work because it's across rows and not entire array
-# Xstd = X .- minimum(X)
-# Xstd = Xstd ./ (maximum(Xstd) .- minimum(Xstd))
-
 
 originalmap = heatmap(c)
 savefig("figures/original_carcajou.pdf")
