@@ -1,10 +1,17 @@
+# using Images
+# using Luxor
+
 # visualize points that have been extracted for Training
 Random.seed!(1234)
-sample_from_x = rand(1:size(Origin,2)-Stride, 150)
-sample_from_y = rand(1:size(Origin,2)-Stride, 150)
+sample_from_x = rand(Stride:size(Origin,2)-Stride, 150)
+sample_from_y = rand(Stride:size(Origin,2)-Stride, 150)
 
 #visualize samples retrieved for Training
 sample_pts = Tuple.(zip(sample_from_x, sample_from_y))
+
+heatmap(Origin)
+scatter!(sample_pts, legend=false)
+
 #create range around coordinate points
 sample_range = []
 for i in sample_pts
@@ -22,3 +29,6 @@ rep_wyes = repeat.(wyes, inner = 9)
 #zip them together
 zip_reps = Tuple.(zip(rep_exes, rep_wyes))
 samp_coords = [Tuple.(CartesianIndex.(zip_reps[i]...)) for i in 1:length(zip_reps)]
+all_samp_pts = reduce(vcat, samp_coords)
+
+display(plot(samp_coords))
