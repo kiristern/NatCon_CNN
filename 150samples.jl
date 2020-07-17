@@ -3,11 +3,24 @@
 
 # visualize points that have been extracted for Training
 Random.seed!(1234)
-sample_from_x = rand(Stride:size(Origin,2)-Stride, 150)
-sample_from_y = rand(Stride:size(Origin,2)-Stride, 150)
+get_train_samp = rand(Stride:size(Origin,2)-Stride, 150)
+get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
+
+
+maps = []
+connect = []
+for i in get_train_samp, j in get_train_samp2
+  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
+  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
+  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
+  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
+  push!(maps, x)
+  push!(connect, y)
+end
+
 
 #visualize samples retrieved for Training
-sample_pts = Tuple.(zip(sample_from_x, sample_from_y))
+sample_pts = Tuple.(zip(get_train_samp, get_train_samp2))
 
 heatmap(Origin)
 scatter!(sample_pts, legend=false)
