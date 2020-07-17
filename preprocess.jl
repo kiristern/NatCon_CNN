@@ -33,8 +33,8 @@ end
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
 Stride = 9
 Random.seed!(1234)
-get_train_samp = rand(1:size(Origin,2)-Stride, 150)
-get_train_samp2 = rand(1:size(Origin,2)-Stride, 150)
+get_train_samp = rand(Stride:size(Origin,2)-Stride, 150)
+get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
 
 maps = []
 connect = []
@@ -50,8 +50,8 @@ end
 
 #create Testing dataset
 Random.seed!(5678)
-get_train_samp3 = rand(1:size(Origin,2)-Stride, 150)
-get_train_samp4 = rand(1:size(Origin,2)-Stride, 150)
+get_train_samp3 = rand(Stride:size(Origin,2)-Stride, 150)
+get_train_samp4 = rand(Stride:size(Origin,2)-Stride, 150)
 
 test_maps = []
 test_connect = []
