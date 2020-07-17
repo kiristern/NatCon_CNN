@@ -16,18 +16,24 @@ Output:
 
 include("libraries.jl")
 include("functions.jl")
-# cd(@__DIR__)
+cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
-Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
+Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_RR.asc"; nd="NODATA")
 Origin = readasc("data/input/origin.asc"; nd="NODATA")
-Connectivity = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
+Connectivity = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
 
 begin
   nan_to_0(Resistance)
   nan_to_0(Origin)
   nan_to_0(Connectivity)
 end
+
+
+
+
+
+
 
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
@@ -50,7 +56,7 @@ p1 = heatmap(validation_set[1][2][:,:,1,32], title="predicted") #connectivity ma
 p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="observed") #resistance and origin layer map
 p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
 plot(p1,p2,p3)
-savefig("figures/fullblackbear_test_$(run)sec_$(best_acc*100)%.png")
+savefig("figures/fullblackfox_test_$(run)sec_$(best_acc*100)%.png")
 
 
 
@@ -127,45 +133,122 @@ truemap = [reduce(vcat, p) for p in Iterators.partition(truemap, Desired_y)]
 all(isapprox.(c, truemap[1]))
 
 
-# @time include("model.jl")
-@time @load "BSON/full_blackbear_849sec_9890acc.bson" params #upload last saved model
+@time include("model.jl")
+@time @load "BSON/fox_full.bson" params #upload last saved model
 Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
 
 ##### Run model on data #####
 #run trained model on new minibatched data (from )
 model_on_9x9 = trained_model(nine_nine)
 
-#if less than 0, = 0; if >1 = 1
-model_on_9x9_zero = replace.(x -> x < 0 ? 0 : x, model_on_9x9)
-model_9x9 = replace.(x -> x > 1 ? 1 : x, model_on_9x9_zero)
-
 
 #reduce 4D to 2D
-mod = []
-for t in model_9x9
-  tmp2 = [t[:,:,1,i] for i in 1:batch_size]
-  push!(mod, tmp2)
-end
-#reduce to one vector of arrays
-mod = reduce(vcat, mod)
+begin
+  mod = []
+  for t in model_on_9x9
+    tmp2 = [t[:,:,1,i] for i in 1:batch_size]
+    push!(mod, tmp2)
+  end
+  #reduce to one vector of arrays
+  mod = reduce(vcat, mod)
 
-# remove_last = rem(length(mod), 9)
-#hcat groups of three
-stitched = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
-#vcat the stitched hcats
-stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], 139)]
+  # remove_last = rem(length(mod), 9)
+  #hcat groups of three
+  stitched = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
+  #vcat the stitched hcats
+  stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], length(stitched))]
+end
+
+minimum(stitchedmap[1])
+maximum(stitchedmap[1])
+count(x->x > 1, stitchedmap[1])
+count(x->x <0, stitchedmap[1])
+count(x->x ==0, stitchedmap[1])
+# findall(x->x >1, stitchedmap[1])
+# replace!(stitchedmap[1], 0 => NaN)
+
+
 
 originalmap = heatmap(c)
+savefig("figures/fox.png")
 
 fullmap = heatmap(stitchedmap[1])
-# savefig("figures/bear_model.png")
+savefig("figures/foxfullMacGPU_on_fox.png")
 
-scat = scatter(stitchedmap[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-# savefig("figures/scatter_bear_model.png")
+scat1 = scatter(stitchedmap[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+savefig("figures/scatter_foxfullMacGPU_on_fox.png")
 
-difference = stitchedmap[1] - c[1:end-9, :] #overestimating = 1; underestimating = -1
-dif = heatmap(difference)
-# savefig("figures/difference_bear_model.png")
+difference1 = stitchedmap[1] - c[1:end-9, :] #overestimating = 1; underestimating = -1
+heatmap(difference1)
+savefig("figures/difference_foxfullMacGPU_on_fox.png")
 
-plot(originalmap, fullmap, scat, dif)
-# savefig("figures/comparisons_bear.png")
+
+
+### IF < 0, set to 0 ###
+begin
+  #if less than 0, = 0; if >1 = 1
+  model_on_9x9_zero = replace.(x -> x < 0 ? 0 : x, model_on_9x9)
+  # model_9x9 = replace.(x -> x > 1 ? 1 : x, model_on_9x9_zero)
+
+  #reduce 4D to 2D
+  mod0 = []
+  for t in model_on_9x9_zero
+    tmp2 = [t[:,:,1,i] for i in 1:batch_size]
+    push!(mod0, tmp2)
+  end
+  mod0 = reduce(vcat, mod0)
+
+  stitched0 = [reduce(hcat, p) for p in Iterators.partition(mod0, Desired_x)]
+  stitchedmap0 = [reduce(vcat, p) for p in Iterators.partition(stitched0[1:end-1], length(stitched0))]
+end
+
+heatmap(stitchedmap0[1])
+savefig("figures/foxfullMacGPU_on_fox<0.png")
+
+
+
+
+
+#normalize data between 0-1 while keeping weights
+map_scale0 = (stitchedmap0[1] .- minimum(stitchedmap0[1])) ./ (maximum(stitchedmap0[1]) .- minimum(stitchedmap0[1]))
+
+heatmap(map_scale0)
+savefig("figures/foxfullMacGPU_on_fox<0scaled.png")
+
+scat2 = scatter(map_scale0, c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+savefig("figures/scatter_foxfullMacGPU_on_fox<0scaled.png")
+
+dif2 = map_scale0 - c[1:end-9, :]
+heatmap(dif2)
+savefig("figures/difference_foxfullMacGPU_on_fox<0scaled.png")
+
+
+
+
+
+
+#### 0 =< x <= 1 ####
+begin
+  model_9x9 = replace.(x -> x > 1 ? 1 : x, model_on_9x9_zero)
+
+  #reduce 4D to 2D
+  mod2 = []
+  for t in model_9x9
+    tmp2 = [t[:,:,1,i] for i in 1:batch_size]
+    push!(mod2, tmp2)
+  end
+  mod2 = reduce(vcat, mod2)
+
+  stitched1 = [reduce(hcat, p) for p in Iterators.partition(mod2, Desired_x)]
+  stitchedmap1 = [reduce(vcat, p) for p in Iterators.partition(stitched1[1:end-1], length(stitched1))]
+end
+
+heatmap(stitchedmap1[1])
+savefig("figures/foxfullMacGPU_on_fox0<<1.png")
+
+scat3 = scatter(stitchedmap1[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+savefig("figures/scatter_foxfullMacGPU_on_fox0<<1.png")
+
+dif3 = stitchedmap1[1] - c[1:end-9, :]
+heatmap(dif3)
+savefig("figures/difference_foxfullMacGPU_on_fox0<<1.png")
