@@ -34,10 +34,11 @@ end
 Stride = 9
 Random.seed!(1234)
 get_train_samp = rand(1:size(Origin,2)-Stride, 150)
+get_train_samp2 = rand(1:size(Origin,2)-Stride, 150)
 
 maps = []
 connect = []
-for i in get_train_samp, j in get_train_samp
+for i in get_train_samp, j in get_train_samp2
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
@@ -49,11 +50,12 @@ end
 
 #create Testing dataset
 Random.seed!(5678)
-get_train_samp2 = rand(1:size(Origin,2)-Stride, 150)
+get_train_samp3 = rand(1:size(Origin,2)-Stride, 150)
+get_train_samp4 = rand(1:size(Origin,2)-Stride, 150)
 
 test_maps = []
 test_connect = []
-for i in get_train_samp2, j in get_train_samp2
+for i in get_train_samp3, j in get_train_samp4
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
