@@ -31,12 +31,13 @@ end
 
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
-Random.seed!(1234)
 Stride = 9
+Random.seed!(1234)
+get_train_samp = rand(1:size(Origin,2)-Stride, 150)
 
 maps = []
 connect = []
-for i in rand(1:size(Origin,2)-Stride, 150), j in rand(1:size(Origin,2)-Stride, 150)
+for i in get_train_samp, j in get_train_samp
   #taking groups of matrices of dimensions StridexStride
   x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
   x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
