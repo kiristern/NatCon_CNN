@@ -1,8 +1,15 @@
-# using Images
-# using Luxor
+#=
+
+This script returns a visual representation of the 150 sampling points used for training the model.
+
+Points will update according to the change in RNG/training points.
+
+=#
+
+using Luxor
 
 # visualize points that have been extracted for Training
-# Random.seed!(1234)
+Random.seed!(1234)
 get_train_samp = rand(1:size(Origin,2)-Stride, 150)
 get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
 
@@ -42,22 +49,6 @@ sample_pts = Tuple.(zip(get_train_samp, get_train_samp2))
 # zip_reps = Tuple.(zip(rep_exes, rep_wyes))
 # samp_coords = [Tuple.(CartesianIndex.(zip_reps[i]...)) for i in 1:length(zip_reps)]
 # all_samp_pts = reduce(vcat, samp_coords)
-
-
-
-
-### drawing just the points ###
-@png begin
-  Drawing(1206, 1255, "boxplot_train_samp.png")
-  # Luxor.scale(-1)
-  # Luxor.scale(0,-1)
-  sethue("red")
-  setline(2)
-  for i in 1:length(sample_pts)
-    rect(sample_pts[i][1], 1255-sample_pts[i][2], 9, 9, :stroke)
-  end
-end
-
 
 
 
