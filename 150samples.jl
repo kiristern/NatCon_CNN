@@ -70,11 +70,12 @@ begin
   placeimage(O_img, 0,0)
   # now annotate the image. The (0/0) is at the top left.
   sethue("red")
-  scale(0.40, 0.2905)
-  Luxor.translate(113.5, 28)
-  setline(1)
+  scale(0.40, 0.2905) #scale points to match size of basemap
+  Luxor.translate(113.5, 28) #move points to fit within basemap bounds
+  setline(1) #width of boxlines
+  #get the points used for the training samples
   for i in 1:length(sample_pts)
-    rect(sample_pts[i][1], 1255-sample_pts[i][2], 9, 9, :stroke)
+    rect(sample_pts[i][1], 1255-sample_pts[i][2], 9, 9, :stroke) #create 9x9 rectangles based on the starting points (x,y)
   end
   finish()
   preview()
