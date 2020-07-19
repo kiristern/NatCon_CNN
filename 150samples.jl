@@ -8,6 +8,24 @@ Points will update according to the change in RNG/training points.
 
 using Luxor
 
+
+cartidx = findall(x->x > 0, Connectivity)
+
+samp_pts = sample(cartidx, 150)
+
+get_train_samp = []
+get_train_samp2 = []
+for i in 1:length(samp_pts)
+  x = samp_pts[i][1]
+  y = samp_pts[i][2]
+  push!(get_train_samp, y)
+  push!(get_train_samp2, x)
+end
+
+# get_train_samp = rand(1:size(Origin,2)-Stride, 150)
+# get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
+
+
 # visualize points that have been extracted for Training
 Random.seed!(1234)
 get_train_samp = rand(1:size(Origin,2)-Stride, 150)
