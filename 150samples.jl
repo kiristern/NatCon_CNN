@@ -8,10 +8,10 @@ Points will update according to the change in RNG/training points.
 
 using Luxor
 
+bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
+presence_data = findall(x->x > 0, bounds_connect)
 
-cartidx = findall(x->x > 0, Connectivity)
-
-samp_pts = sample(cartidx, 150)
+samp_pts = sample(presence_data, 150)
 
 get_train_samp = []
 get_train_samp2 = []
