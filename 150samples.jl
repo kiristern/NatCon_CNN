@@ -11,6 +11,7 @@ using Luxor
 bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
 presence_data = findall(x->x > 0, bounds_connect)
 
+Random.seed!(1234)
 samp_pts = sample(presence_data, 150)
 
 get_train_samp = []
@@ -26,10 +27,6 @@ end
 # get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
 
 
-# visualize points that have been extracted for Training
-Random.seed!(1234)
-get_train_samp = rand(1:size(Origin,2)-Stride, 150)
-get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
 
 # bbox=[]
 # for i in get_train_samp, j in get_train_samp2
