@@ -6,30 +6,27 @@ Points will update according to the change in RNG/training points.
 
 =#
 
-using Luxor
+begin
+  bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
+  presence_data = findall(x->x > 0, bounds_connect)
 
-bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
-presence_data = findall(x->x > 0, bounds_connect)
+  samp_pts = sample(presence_data, 150)
 
-Random.seed!(1234)
-samp_pts = sample(presence_data, 150)
-
-get_train_samp = []
-get_train_samp2 = []
-for i in 1:length(samp_pts)
-  x = samp_pts[i][1]
-  y = samp_pts[i][2]
-  push!(get_train_samp, y)
-  push!(get_train_samp2, x)
+  get_train_samp = []
+  get_train_samp2 = []
+  for i in 1:length(samp_pts)
+    x = samp_pts[i][1]
+    y = samp_pts[i][2]
+    push!(get_train_samp, y)
+    push!(get_train_samp2, x)
+  end
 end
-
 
 #visualize samples retrieved for Training
 sample_pts = Tuple.(zip(get_train_samp, get_train_samp2))
 
-
-heatmap(Origin)
-scatter!(sample_pts, legend=false)
+# heatmap(Origin)
+# scatter!(sample_pts, legend=false)
 
 ### ploting the boxplots onto map
 # heatmap(Origin)
