@@ -25,32 +25,35 @@ end
 Create Training and Testing datasets
 =#
 #Extract 150 random 9x9 resistance, origin, and connectivity layers
-number_of_samples = 150
-bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
-presence_data = findall(x->x > 0, bounds_connect)
+begin
+  bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
+  presence_data = findall(x->x > 0, bounds_connect)
 
-Random.seed!(1234)
-samp_pts = sample(presence_data, number_of_samples)
+  #for maps and connect
+  Random.seed!(1234)
+  samp_pts = sample(presence_data, number_of_samples)
 
-get_train_samp1 = []
-get_train_samp2 = []
-for i in 1:length(samp_pts)
-  x = samp_pts[i][1]
-  y = samp_pts[i][2]
-  push!(get_train_samp1, y)
-  push!(get_train_samp2, x)
-end
+  get_train_samp1 = []
+  get_train_samp2 = []
+  for i in 1:length(samp_pts)
+    x = samp_pts[i][1]
+    y = samp_pts[i][2]
+    push!(get_train_samp1, y)
+    push!(get_train_samp2, x)
+  end
 
-Random.seed!(5678)
-samp_pts2 = sample(presence_data, number_of_samples)
+  #for test_maps, test_connect
+  Random.seed!(5678)
+  samp_pts2 = sample(presence_data, number_of_samples)
 
-get_train_samp3 = []
-get_train_samp4 = []
-for i in 1:length(samp_pts2)
-  x = samp_pts[i][1]
-  y = samp_pts[i][2]
-  push!(get_train_samp3, y)
-  push!(get_train_samp4, x)
+  get_train_samp3 = []
+  get_train_samp4 = []
+  for i in 1:length(samp_pts2)
+    x = samp_pts[i][1]
+    y = samp_pts[i][2]
+    push!(get_train_samp3, y)
+    push!(get_train_samp4, x)
+  end
 end
 
 function make_datasets(Resistance, Origin, Connectivity)
@@ -94,6 +97,36 @@ function samp_multi_sp(sp_res, sp_or, sp_con)
   push!(connect_multisp, make_datasets(sp_res, sp_or, sp_con)[2])
   push!(test_multisp, make_datasets(sp_res, sp_or, sp_con)[3])
   push!(test_maps_connect_multisp, make_datasets(sp_res, sp_or, sp_con)[4])
+end
+
+
+###########################
+# Visualize sample points #
+###########################
+
+function visual_samp_pts(get_training_samp, get_training_samp2)
+  sample_pts = Tuple.(zip(get_training_samp, get_training_samp2))
+  begin
+    O_img = readpng("Origin.png")
+    w = O_img.width
+    h = O_img.height
+    #create a drawing surface of the same size
+    fname = "boxplotsamples_on_map.png" #TODO: make sure to change filename!!
+    Drawing(w, h, fname)
+    #place the image on the Drawing -- it's positioned by its top/left corner
+    placeimage(O_img, 0,0)
+    # now annotate the image. The (0/0) is at the top left.
+    sethue("red")
+    scale(0.40, 0.2905) #scale points to match size of basemap
+    Luxor.translate(113.5, 28) #move points to fit within basemap bounds
+    setline(1) #width of boxlines
+    #get the points used for the training samples
+    for i in 1:length(sample_pts)
+      rect(sample_pts[i][1], 1255-sample_pts[i][2], 9, 9, :stroke) #create 9x9 rectangles based on the starting points (x,y)
+    end
+    finish()
+    preview()
+  end
 end
 
 
