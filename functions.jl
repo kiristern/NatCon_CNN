@@ -25,26 +25,53 @@ end
 Create Training and Testing datasets
 =#
 #Extract 150 random 9x9 resistance, origin, and connectivity layers
+number_of_samples = 150
+bounds_connect = Connectivity[:,1:size(Connectivity,2)-Stride]
+presence_data = findall(x->x > 0, bounds_connect)
+
+Random.seed!(1234)
+samp_pts = sample(presence_data, number_of_samples)
+
+get_train_samp1 = []
+get_train_samp2 = []
+for i in 1:length(samp_pts)
+  x = samp_pts[i][1]
+  y = samp_pts[i][2]
+  push!(get_train_samp1, y)
+  push!(get_train_samp2, x)
+end
+
+Random.seed!(5678)
+samp_pts2 = sample(presence_data, number_of_samples)
+
+get_train_samp3 = []
+get_train_samp4 = []
+for i in 1:length(samp_pts2)
+  x = samp_pts[i][1]
+  y = samp_pts[i][2]
+  push!(get_train_samp3, y)
+  push!(get_train_samp4, x)
+end
+
 function make_datasets(Resistance, Origin, Connectivity)
-  Random.seed!(1234)
   maps = []
   connect = []
-  for i in rand(1:size(Origin,2)-Stride, 150), j in rand(1:size(Origin,2)-Stride, 150)
+  for i in get_train_samp2, j in get_train_samp1
     #taking groups of matrices of dimensions StridexStride
     x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
     x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
     x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
     y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-    #if minimum(y) > 0 #predict only when there is connectivity
+    # if minimum(y) > 0 #predict only when there is connectivity
       push!(maps, x)
       push!(connect, y)
-    #end
+    # end
   end
+
 #create Testing dataset
-  Random.seed!(5678)
   test_maps = []
   test_connect = []
-  for i in rand(1:size(Origin,2)-Stride, 150), j in rand(1:size(Origin,2)-Stride, 150)
+  for i in get_train_samp4, j in get_train_samp3
     x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
     x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
     x = cat(x_res, x_or, dims=3)
@@ -55,6 +82,18 @@ function make_datasets(Resistance, Origin, Connectivity)
     #end
   end
   return maps, connect, test_maps, test_connect
+end
+
+
+
+#=
+Push samples from multiple species into maps_multisp, connect_multisp, test_multisp, test_maps_connect_multisp
+=#
+function samp_multi_sp(sp_res, sp_or, sp_con)
+  push!(maps_multisp, make_datasets(sp_res, sp_or, sp_con)[1])
+  push!(connect_multisp, make_datasets(sp_res, sp_or, sp_con)[2])
+  push!(test_multisp, make_datasets(sp_res, sp_or, sp_con)[3])
+  push!(test_maps_connect_multisp, make_datasets(sp_res, sp_or, sp_con)[4])
 end
 
 
