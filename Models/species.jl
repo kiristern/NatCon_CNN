@@ -51,58 +51,48 @@ begin
   nan_to_0(Origin)
 end
 
+#create Training dataset
+# Extract 150 random 9x9 resistance, origin, and connectivity layers
+Random.seed!(1234)
 Stride = 9
-batch_size = 32
+batch_size=32
+number_of_samples = 30
 
-#carcajou
-maps_carcajou, connect_carcajou, test_maps_carcajou, test_connect_carcajou = make_datasets(resistance_carcajou, Origin, connectivity_carcajou)
+maps_multisp, connect_multisp, test_multisp, test_maps_connect_multisp = [], [], [], []
+
+samp_multi_sp(resistance_carcajou, Origin, connectivity_carcajou)
+samp_multi_sp(resistance_cougar, Origin, connectivity_cougar)
+samp_multi_sp(resistance_ours, Origin, connectivity_ours)
+samp_multi_sp(resistance_renard, Origin, connectivity_renard)
+samp_multi_sp(resistance_ratonlaveur, Origin, connectivity_ratonlaveur)
 
 
-train_maps_carcajou, train_connect_carcajou, valid_maps_carcajou, valid_connect_carcajou = partition_dataset(maps_carcajou, connect_carcajou)
-
-train_set_carcajou, validation_set_carcajou = make_sets(train_maps_carcajou, train_connect_carcajou, valid_maps_carcajou, valid_connect_carcajou)
-
-
-
-
-#cougar
-maps_cougar, connect_cougar, test_maps_cougar, test_connect_cougar = make_datasets(resistance_cougar, Origin, connectivity_cougar)
-
-train_maps_cougar, train_connect_cougar, valid_maps_cougar, valid_connect_cougar = partition_dataset(maps_cougar, connect_cougar)
-
-train_set_cougar, validation_set_cougar = make_sets(train_maps_cougar, train_connect_cougar, valid_maps_cougar, valid_connect_cougar)
+visual_samp_pts(get_train_samp1, get_train_samp2)
 
 
 
-#ours noir
-maps_ours, connect_ours, test_maps_ours, test_connect_ours = make_datasets(resistance_ours, Origin, connectivity_ours)
+maps_multisp
+connect_multisp
+test_multisp
+test_maps_connect_multisp
+
+maps_multisp = vcat(maps_multisp...)
+connect_multisp = vcat(connect_multisp...)
+
+
+#script returns:
+# maps_multisp
+# connect_multisp
+# test_maps_multisp
+# test_connect_multisp
+
+
+train_maps_multisp, train_connect_multisp, valid_maps_multisp, valid_connect_multisp = partition_dataset(maps_multisp, connect_multisp)
+
+train_set_multisp, validation_set_multisp = make_sets(train_maps_multisp, train_connect_multisp, valid_maps_multisp, valid_connect_multisp)
+
+get_train_samp1
 
 
 
-train_maps_ours, train_connect_ours, valid_maps_ours, valid_connect_ours = partition_dataset(maps_ours, connect_ours)
-
-train_set_ours, validation_set_ours = make_sets(train_maps_ours, train_connect_ours, valid_maps_ours, valid_connect_ours)
-
-
-
-
-
-#renard roux
-maps_renard, connect_renard, test_maps_renard, test_connect_renard = make_datasets(resistance_renard, Origin, connectivity_renard)
-
-train_maps_renard, train_connect_renard, valid_maps_renard, valid_connect_renard = partition_dataset(maps_renard, connect_renard)
-
-train_set_renard, validation_set_renard = make_sets(train_maps_renard, train_connect_renard, valid_maps_renard, valid_connect_renard)
-
-
-
-
-
-
-
-#raton laveur
-maps_ratonlaveur, connect_ratonlaveur, test_maps_ratonlaveur, test_connect_ratonlaveur = make_datasets(resistance_ratonlaveur, Origin, connectivity_ratonlaveur)
-
-train_maps_ratonlaveur, train_connect_ratonlaveur, valid_maps_ratonlaveur, valid_connect_ratonlaveur = partition_dataset(maps_ratonlaveur, connect_ratonlaveur)
-
-train_set_ratonlaveur, validation_set_ratonlaveur = make_sets(train_maps_ratonlaveur, train_connect_ratonlaveur, valid_maps_ratonlaveur, valid_connect_ratonlaveur)
+#TODO: run on train_model.jl script! :D
