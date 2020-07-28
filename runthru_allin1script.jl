@@ -18,9 +18,9 @@ Output:
 # cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
-Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_RR.asc"; nd="NODATA")
+Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
 Origin = readasc("data/input/origin.asc"; nd="NODATA")
-Connectivity = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
+Connectivity = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
 
 #declare parameters
 Stride = 9
@@ -55,7 +55,7 @@ include("model.jl")
 # Plot
 p1 = heatmap(validation_set[1][2][:,:,1,32], title="predicted") #connectivity map
 p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="observed") #resistance and origin layer map
-p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
+p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), yaxis="observed (model)", xaxis="predicted (true values)")
 plot(p1,p2,p3)
 savefig("figures/fullblackfox_test_$(run)sec_$(best_acc*100)%.png")
 
@@ -135,7 +135,7 @@ begin
 end
 
 @time include("model.jl")
-@time @load "BSON/foxmod2_sampleonlywheredata.bson" params #upload last saved model
+@time @load "BSON/multispmod10_sampleonlywheredata.bson" params #upload last saved model
 Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
 
 ##### Run model on data #####
@@ -143,23 +143,21 @@ Flux.loadparams!(model, params) #new model will now be identical to the one save
 begin
   model_on_9x9 = trained_model(nine_nine)
 
-
+  
   #reduce 4D to 2D
-  begin
-    mod = []
-    for t in model_on_9x9
-      tmp2 = [t[:,:,1,i] for i in 1:batch_size]
-      push!(mod, tmp2)
-    end
-    #reduce to one vector of arrays
-    mod = reduce(vcat, mod)
-
-    # remove_last = rem(length(mod), 9)
-    #hcat groups of three
-    stitched = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
-    #vcat the stitched hcats
-    stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], length(stitched))]
+  mod = []
+  for t in model_on_9x9
+    tmp2 = [t[:,:,1,i] for i in 1:batch_size]
+    push!(mod, tmp2)
   end
+  #reduce to one vector of arrays
+  mod = reduce(vcat, mod)
+
+  # remove_last = rem(length(mod), 9)
+  #hcat groups of three
+  stitched = [reduce(hcat, p) for p in Iterators.partition(mod, Desired_x)]
+  #vcat the stitched hcats
+  stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], length(stitched))]
 end
 
 minimum(stitchedmap[1])
@@ -173,18 +171,18 @@ count(x->x ==0, stitchedmap[1])
 
 
 
-# originalmap = heatmap(c)
-# savefig("figures/fox.pdf")
+originalmap = heatmap(c)
+savefig("figures/carcajou.png")
 
 fullmap = heatmap(stitchedmap[1])
-savefig("figures/foxmod2_sampleonlywheredata_on_fox.png")
+savefig("figures/multispmod10_sampleonlywheredata_on_carcajou.png")
 
-scat1 = scatter(stitchedmap[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-savefig("figures/scatter_foxmod2_sampleonlywheredata_on_fox.png")
+scat1 = scatter(stitchedmap[1], c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), yaxis="observed (model)", xaxis="predicted (true)")
+savefig("figures/scatter_multispmod10_sampleonlywheredata_on_carcajou.png")
 
 difference1 = stitchedmap[1] - c[1:end-9, :] #overestimating = 1; underestimating = -1
 heatmap(difference1)
-savefig("figures/difference_foxmod2_sampleonlywheredata_on_fox.png")
+savefig("figures/difference_multispmod10_sampleonlywheredata_on_carcajou.png")
 
 
 
@@ -207,7 +205,7 @@ begin
 end
 
 heatmap(stitchedmap0[1])
-savefig("figures/foxmod2_sampleonlywheredata_on_fox<0.png")
+savefig("figures/multispmod10_sampleonlywheredata_on_carcajou<0.png")
 
 
 
@@ -217,11 +215,11 @@ savefig("figures/foxmod2_sampleonlywheredata_on_fox<0.png")
 map_scale0 = (stitchedmap0[1] .- minimum(stitchedmap0[1])) ./ (maximum(stitchedmap0[1]) .- minimum(stitchedmap0[1]))
 
 heatmap(map_scale0)
-savefig("figures/foxmod2_sampleonlywheredata_on_fox<0scaled.pdf")
+savefig("figures/multispmod10_sampleonlywheredata_on_carcajou<0scaled.png")
 
-scat2 = scatter(map_scale0, c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-savefig("figures/scatter_foxmod2_sampleonlywheredata_on_fox<0scaled.png")
+scat2 = scatter(map_scale0, c[1:end-9, :], leg=false, c=:black, xlim=(0,1), ylim=(0,1), yaxis="observed (model)", xaxis="predicted (true)")
+savefig("figures/scatter_multispmod10_sampleonlywheredata_on_carcajou<0scaled.png")
 
 dif2 = map_scale0 - c[1:end-9, :]
 heatmap(dif2)
-savefig("figures/difference_foxmod2_sampleonlywheredata_on_fox<0scaled.png")
+savefig("figures/difference_multispmod10_sampleonlywheredata_on_carcajou<0scaled.png")
