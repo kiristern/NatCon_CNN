@@ -1,19 +1,15 @@
-#=
 
-Create and train a model
-
-=#
 
 cd(@__DIR__)
 @time include("libraries.jl")
-@time include("functions.jl") #desired object found in line 23 of preprocess_idx.jl script
+@time include("functions.jl") #desired object found in line 23 of StitchLargeMap.jl script
 @time include("preprocess.jl")
 @time include("validation_dataset.jl")
 @time include("minibatch.jl")
 @time include("model.jl")
-@time @load "BSON/2sp_original_ratonlaveur_300samples.bson" params #upload last saved model
+@time @load "BSON/multispmod10_sampleonlywheredata.bson" params #upload last saved model
 Flux.loadparams!(model, params) #new model will now be identical to the one saved params for
-@time include("preprocess_idx.jl")
+@time include("StitchLargerMap.jl")
 
 
 #have a look of trained model performance
