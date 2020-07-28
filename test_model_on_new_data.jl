@@ -18,12 +18,21 @@ begin
     print("## Plotting...  ##")
     print("##################")
 end
-p1 = heatmap(validation_set[1][2][:,:,1,1], title="predicted") #connectivity map
-p2 = heatmap(model(validation_set[1][1])[:,:,1,1], title="observed") #resistance and origin layer map
-p3 = scatter(validation_set[1][2][:,:,1,1], model(validation_set[1][1])[:,:,1,1], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="observed (model)", yaxis="predicted (true values)")
-plot(p1,p2,p3)
-savefig("figures/2sp_orig_rl_600samples_$(run)sec_$(best_acc*100)%.png")
 
+connect_true = validation_set[1][2][:,:,1,4]
+connect_model = model(validation_set[1][1])[:,:,1,4]
+
+p1 = heatmap(connect_true, title="True Connectivity") #connectivity map
+p2 = heatmap(connect_model, title="Predicted Connectivity (model)") #resistance and origin layer map
+p3 = scatter(connect_true, connect_model, leg=false, c=:black, xlim=(0,1), ylim=(0,1), yaxis="Predicted (model)", xaxis="True")
+plot(p1,p2,p3)
+# savefig("figures/2sp_orig_rl_600samples_$(run)sec_$(best_acc*100)%.png")
+
+#save as csv files
+# using DelimitedFiles
+#
+# convert(Matrix{Float32}, connect_true) |> f -> writedlm("true_connect9x9.csv", f)
+# convert(Matrix{Float32}, connect_model) |> f -> writedlm("model_connect9x9.csv", f)
 
 #=
 Test model on:
