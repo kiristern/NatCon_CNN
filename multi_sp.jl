@@ -16,24 +16,25 @@ Output:
 
 include("libraries.jl")
 include("functions.jl")
-include("model.jl")
 # cd(@__DIR__)
 
 #read in datafiles
-connectivity_carcajou = readasc("data/maps_for_Kiri/Current_Carcajou.asc")
-connectivity_cougar = readasc("data/maps_for_Kiri/Current_Cougar.asc")
-connectivity_ours = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
-connectivity_renard = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
-connectivity_ratonlaveur = readasc("data/maps_for_Kiri/RL_cum_currmap.asc")
+begin
+  connectivity_carcajou = readasc("data/maps_for_Kiri/Current_Carcajou.asc")
+  connectivity_cougar = readasc("data/maps_for_Kiri/Current_Cougar.asc")
+  connectivity_ours = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
+  connectivity_renard = readasc("data/maps_for_Kiri/RR_cum_currmap.asc")
+  connectivity_ratonlaveur = readasc("data/maps_for_Kiri/RL_cum_currmap.asc")
 
-resistance_carcajou = readasc("data/maps_for_Kiri/Resistance_zone_beta_Carcajou.asc"; nd="NODATA")
-resistance_cougar = readasc("data/maps_for_Kiri/Resistance_zone_beta_Cougar.asc"; nd="NODATA")
-resistance_ours = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
-resistance_coyote = readasc("data/maps_for_Kiri/Resistance_zone_beta_Coyote.asc"; nd="NODATA")
-resistance_renard = readasc("data/maps_for_Kiri/Resistance_zone_beta_RR.asc"; nd="NODATA")
-resistance_ratonlaveur = readasc("data/maps_for_Kiri/Resistance_zone_beta_RL.asc"; nd="NODATA")
+  resistance_carcajou = readasc("data/maps_for_Kiri/Resistance_zone_beta_Carcajou.asc"; nd="NODATA")
+  resistance_cougar = readasc("data/maps_for_Kiri/Resistance_zone_beta_Cougar.asc"; nd="NODATA")
+  resistance_ours = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
+  resistance_coyote = readasc("data/maps_for_Kiri/Resistance_zone_beta_Coyote.asc"; nd="NODATA")
+  resistance_renard = readasc("data/maps_for_Kiri/Resistance_zone_beta_RR.asc"; nd="NODATA")
+  resistance_ratonlaveur = readasc("data/maps_for_Kiri/Resistance_zone_beta_RL.asc"; nd="NODATA")
 
-Origin = readasc("data/input/origin.asc"; nd="NODATA")
+  Origin = readasc("data/input/origin.asc"; nd="NODATA")
+end
 
 #convert NaN to zero
 begin
@@ -51,6 +52,24 @@ begin
   nan_to_0(Origin)
 end
 
+
+#save as csv files
+using DelimitedFiles
+
+convert(Matrix{Float32}, connectivity_carcajou) |> f -> writedlm("connectivity_carcajou.csv", f)
+convert(Matrix{Float32}, connectivity_cougar) |> f -> writedlm("connectivity_cougar.csv", f)
+convert(Matrix{Float32}, connectivity_ours) |> f -> writedlm("connectivity_oursnoir.csv", f)
+convert(Matrix{Float32}, connectivity_renard) |> f -> writedlm("connectivity_renard.csv", f)
+convert(Matrix{Float32}, connectivity_ratonlaveur) |> f -> writedlm("connectivity_ratonlaveur.csv", f)
+convert(Matrix{Float32}, resistance_carcajou) |> f -> writedlm("resistance_carcajou.csv", f)
+convert(Matrix{Float32}, resistance_cougar) |> f -> writedlm("resistance_cougar.csv", f)
+convert(Matrix{Float32}, resistance_ours) |> f -> writedlm("resistance_oursnoir.csv", f)
+convert(Matrix{Float32}, resistance_coyote) |> f -> writedlm("resistance_coyote.csv", f)
+convert(Matrix{Float32}, resistance_renard) |> f -> writedlm("resistance_renard.csv", f)
+convert(Matrix{Float32}, resistance_ratonlaveur) |> f -> writedlm("resistance_ratonlaveur.csv", f)
+convert(Matrix{Float32}, Origin) |> f -> writedlm("Origin.csv", f)
+
+
 #create Training dataset
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
 Random.seed!(1234)
@@ -65,10 +84,6 @@ samp_multi_sp(resistance_cougar, Origin, connectivity_cougar)
 samp_multi_sp(resistance_ours, Origin, connectivity_ours)
 samp_multi_sp(resistance_renard, Origin, connectivity_renard)
 samp_multi_sp(resistance_ratonlaveur, Origin, connectivity_ratonlaveur)
-
-
-visual_samp_pts(get_train_samp1, get_train_samp2)
-
 
 
 maps_multisp
@@ -92,7 +107,8 @@ train_maps_multisp, train_connect_multisp, valid_maps_multisp, valid_connect_mul
 train_set_multisp, validation_set_multisp = make_sets(train_maps_multisp, train_connect_multisp, valid_maps_multisp, valid_connect_multisp)
 
 get_train_samp1
+visual_samp_pts(get_train_samp1, get_train_samp2)
 
 
-
+# include("model.jl")
 #TODO: run on train_model.jl script! :D
