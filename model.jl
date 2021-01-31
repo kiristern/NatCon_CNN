@@ -15,32 +15,32 @@ begin
 end
 
 m = Chain(
-    Conv((3,3), 2=>16, pad=(1,1), relu),
+    Conv((3,3), 2=>32, pad=(1,1), relu),
     MaxPool((2,2)),
-    Conv((3,3), 16=>32, pad=(1,1), σ),
+    Conv((3,3), 32=>64, pad=(1,1), relu),
     MaxPool((2,2)),
-    Conv((3,3), 32=>8, pad=(1,1), relu),
-    MaxPool((2,2)),
+    Conv((3,3), 64=>81, pad=(1,1), relu),
+    MaxPool((2,2))
 )
-
 inputlayersize = Array{Float32}(undef, 9, 9, 2, 32)
 
 model = Chain(
-    #Apply a Conv layer to a 2-channel (R & O layer) input using a 3x3 window size, giving a 16-channel output. Output is activated by relu
-    Conv((3,3), 2=>16, pad=(1,1), relu),
-    MaxPool((2,2)),
-    #2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
-    Conv((3,3), 16=>32, pad=(1,1), σ),
+    # Apply a Conv layer to a 2-channel (R & O layer) input using a 3x3 window size, giving a 16-channel output. Output is activated by relu
+    Conv((3,3), 2=>32, pad=(1,1), relu),
+    # 2x2 window slides over x reducing it to half the size while retaining most important feature information for learning (takes highest/max value)
     MaxPool((2,2)),
 
-    Conv((3,3), 32=>8, pad=(1,1), relu),
+    Conv((3,3), 32=>64, pad=(1,1), relu),
     MaxPool((2,2)),
 
-    #flatten from 3D tensor to a 2D one, suitable for dense layer and training
+    Conv((3,3), 64=>81, pad=(1,1), relu),
+    MaxPool((2,2)),
+
+    # flatten from 3D tensor to a 2D one, suitable for dense layer and training
     flatten,
-    Dense(Int(prod(size(m[1:6](inputlayersize)))/batch_size), Stride*Stride), #TODO: Try adding an activation function at the end of this layer?
+    Dense(Int(prod(size(m[1:6](inputlayersize)))/batch_size), Stride*Stride),
 
-    #reshape to match output dimensions
+    #reshape to match Connectivity dimensions
     x -> reshape(x, (Stride, Stride, 1, batch_size))
 )
 

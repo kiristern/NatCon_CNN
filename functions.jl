@@ -36,10 +36,10 @@ begin
   get_train_samp1 = []
   get_train_samp2 = []
   for i in 1:length(samp_pts)
-    x = samp_pts[i][1]
-    y = samp_pts[i][2]
-    push!(get_train_samp1, y)
-    push!(get_train_samp2, x)
+    y = samp_pts[i][1]
+    x = samp_pts[i][2]
+    push!(get_train_samp1, x)
+    push!(get_train_samp2, y)
   end
 
   #for test_maps, test_connect
@@ -105,7 +105,7 @@ end
 ###########################
 
 function visual_samp_pts(get_training_samp, get_training_samp2)
-  sample_pts = Tuple.(zip(get_training_samp, get_training_samp2))
+  samp_pts = Tuple.(zip(get_training_samp, get_training_samp2))
   begin
     O_img = readpng("Origin.png")
     w = O_img.width
@@ -121,8 +121,8 @@ function visual_samp_pts(get_training_samp, get_training_samp2)
     Luxor.translate(113.5, 28) #move points to fit within basemap bounds
     setline(1) #width of boxlines
     #get the points used for the training samples
-    for i in 1:length(sample_pts)
-      rect(sample_pts[i][1], 1255-sample_pts[i][2], 9, 9, :stroke) #create 9x9 rectangles based on the starting points (x,y)
+    for i in 1:length(samp_pts)
+      rect(samp_pts[i][1], 1255-samp_pts[i][2], 9, 9, :stroke) #create 9x9 rectangles based on the starting points (x,y)
     end
     finish()
     preview()

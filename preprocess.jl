@@ -14,14 +14,18 @@ Output:
 =#
 
 
-include("libraries.jl")
-include("functions.jl")
+@time include("libraries.jl")
 # cd(@__DIR__)
 
-#Read in the data
-Resistance = readasc("data/input/resistance.asc"; nd="NODATA")
+#Read in the CSV (comma separated values) file and convert them to arrays.
+Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
 Origin = readasc("data/input/origin.asc"; nd="NODATA")
-Connectivity = readasc("data/output/connectivity.asc")
+Connectivity = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
+
+Stride = 9
+number_of_samples = 150
+
+@time include("functions.jl")
 
 begin
   nan_to_0(Resistance)
@@ -29,41 +33,12 @@ begin
   nan_to_0(Connectivity)
 end
 
-#create Training dataset
+#create Training and Testing datasets
 # Extract 150 random 9x9 resistance, origin, and connectivity layers
-Stride = 9
-Random.seed!(1234)
-get_train_samp = rand(1:size(Origin,2)-Stride, 150)
-get_train_samp2 = rand(Stride:size(Origin,2)-Stride, 150)
+maps, connect, test_maps, test_connect = make_datasets(Resistance, Origin, Connectivity)
 
-maps = []
-connect = []
-for i in get_train_samp, j in get_train_samp2
-  #taking groups of matrices of dimensions StridexStride
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin layers
-  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  push!(maps, x)
-  push!(connect, y)
-end
-
-#create Testing dataset
-Random.seed!(5678)
-get_train_samp3 = rand(1:size(Origin,2)-Stride, 150)
-get_train_samp4 = rand(Stride:size(Origin,2)-Stride, 150)
-
-test_maps = []
-test_connect = []
-for i in get_train_samp3, j in get_train_samp4
-  #taking groups of matrices of dimensions StridexStride
-  x_res = Resistance[i:(i+Stride-1),j:(j+Stride-1)]
-  x_or = Origin[i:(i+Stride-1),j:(j+Stride-1)]
-  x = cat(x_res, x_or, dims=3) #concatenate resistance and origin vectors
-  y = Connectivity[i:(i+Stride-1),j:(j+Stride-1)] #matrix we want to predict
-  push!(test_maps, x)
-  push!(test_connect, y)
-end
+#view points used for sampling
+visual_samp_pts(get_train_samp1, get_train_samp2)
 
 #script returns:
 maps

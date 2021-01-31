@@ -18,9 +18,9 @@ Output:
 # cd(@__DIR__)
 
 #Read in the CSV (comma separated values) file and convert them to arrays.
-Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_OursNoir.asc"; nd="NODATA")
+Resistance = readasc("data/maps_for_Kiri/Resistance_zone_beta_Coyote.asc"; nd="NODATA")
 Origin = readasc("data/input/origin.asc"; nd="NODATA")
-Connectivity = readasc("data/maps_for_Kiri/Current_OursNoir.asc")
+Connectivity = readasc("data/maps_for_Kiri/RL_cum_currmap.asc")
 
 #declare parameters
 Stride = 9
@@ -53,9 +53,9 @@ include("model.jl")
 
 
 # Plot
-p1 = heatmap(validation_set[1][2][:,:,1,32], title="predicted") #connectivity map
-p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="observed") #resistance and origin layer map
-p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), yaxis="observed (model)", xaxis="predicted (true values)")
+p1 = heatmap(validation_set[1][2][:,:,1,32], title="True Connectivity") #connectivity map
+p2 = heatmap(model(validation_set[1][1])[:,:,1,32], title="Predicted Connectivity (model)") #resistance and origin layer map
+p3 = scatter(validation_set[1][2][:,:,1,32], model(validation_set[1][1])[:,:,1,32], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="True", yaxis="predicted (model)")
 plot(p1,p2,p3)
 savefig("figures/fullblackfox_test_$(run)sec_$(best_acc*100)%.png")
 
@@ -143,7 +143,7 @@ Flux.loadparams!(model, params) #new model will now be identical to the one save
 begin
   model_on_9x9 = trained_model(nine_nine)
 
-  
+
   #reduce 4D to 2D
   mod = []
   for t in model_on_9x9
@@ -159,6 +159,8 @@ begin
   #vcat the stitched hcats
   stitchedmap = [reduce(vcat, p) for p in Iterators.partition(stitched[1:end-1], length(stitched))]
 end
+
+# convert(Matrix{Float32}, stitchedmap[1]) |> f -> writedlm("mod_connectivity_coyote.csv", f)
 
 minimum(stitchedmap[1])
 maximum(stitchedmap[1])

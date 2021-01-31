@@ -25,7 +25,7 @@ model = gpu(model)
 
 
 # Train our model with the given training set using the ADAM optimizer and printing out performance against the validation set as we go.
-opt = ADAM(0.001)
+opt = ADAM(0.001, (0.9, 0.999))
 best_acc = 0.0
 last_improvement = 0
 begin
@@ -57,7 +57,7 @@ run = @time @elapsed for epoch_idx in 1:200
     # If this is the best accuracy we've seen so far, save the model out
     if acc >= best_acc
         @info(" -> New best accuracy! Saving model out to BSON")
-        BSON.@save joinpath(dirname(@__FILE__), "BSON/fox10_sampleonlywheredata.bson") #= TODO: make sure to change file name when training new model! =# params=cpu.(params(model)) epoch_idx acc
+        BSON.@save joinpath(dirname(@__FILE__), "BSON/foxmod2_sampleonlywheredata.bson") #= TODO: make sure to change file name when training new model! =# params=cpu.(params(model)) epoch_idx acc
         best_acc = acc
         last_improvement = epoch_idx
     end
@@ -83,8 +83,8 @@ begin
     print("## Plotting...  ##")
     print("##################")
 end
-p1 = heatmap(validation_set[1][2][:,:,1,22], title="predicted") #connectivity map
-p2 = heatmap(model(validation_set[1][1])[:,:,1,22], title="observed") #resistance and origin layer map
-p3 = scatter(validation_set[1][2][:,:,1,22], model(validation_set[1][1])[:,:,1,22], leg=false, c=:black, xlim=(0,1), ylim=(0,1), yaxis="observed (model)", xaxis="predicted (true values)")
+p1 = heatmap(validation_set[1][2][:,:,1,2], title="True Connectivity") #connectivity map
+p2 = heatmap(model(validation_set[1][1])[:,:,1,2], title="Predicted Connectivity (model)") #resistance and origin layer map
+p3 = scatter(validation_set[1][2][:,:,1,2], model(validation_set[1][1])[:,:,1,2], leg=false, c=:black, xlim=(0,1), ylim=(0,1), xaxis="true", yaxis="predicted (model)")
 plot(p1,p2,p3)
-savefig("figures/fox10_sampleonlywheredata_$(run)sec_$(best_acc*100)%_[$last_improvement].png")
+savefig("figures/fox1_sampleonlywheredata_$(run)sec_$(best_acc*100)%_[$last_improvement].png")

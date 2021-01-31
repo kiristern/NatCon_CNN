@@ -54,20 +54,20 @@ end
 
 
 #save as csv files
-using DelimitedFiles
-
-convert(Matrix{Float32}, connectivity_carcajou) |> f -> writedlm("connectivity_carcajou.csv", f)
-convert(Matrix{Float32}, connectivity_cougar) |> f -> writedlm("connectivity_cougar.csv", f)
-convert(Matrix{Float32}, connectivity_ours) |> f -> writedlm("connectivity_oursnoir.csv", f)
-convert(Matrix{Float32}, connectivity_renard) |> f -> writedlm("connectivity_renard.csv", f)
-convert(Matrix{Float32}, connectivity_ratonlaveur) |> f -> writedlm("connectivity_ratonlaveur.csv", f)
-convert(Matrix{Float32}, resistance_carcajou) |> f -> writedlm("resistance_carcajou.csv", f)
-convert(Matrix{Float32}, resistance_cougar) |> f -> writedlm("resistance_cougar.csv", f)
-convert(Matrix{Float32}, resistance_ours) |> f -> writedlm("resistance_oursnoir.csv", f)
-convert(Matrix{Float32}, resistance_coyote) |> f -> writedlm("resistance_coyote.csv", f)
-convert(Matrix{Float32}, resistance_renard) |> f -> writedlm("resistance_renard.csv", f)
-convert(Matrix{Float32}, resistance_ratonlaveur) |> f -> writedlm("resistance_ratonlaveur.csv", f)
-convert(Matrix{Float32}, Origin) |> f -> writedlm("Origin.csv", f)
+# using DelimitedFiles
+#
+# convert(Matrix{Float32}, connectivity_carcajou) |> f -> writedlm("connectivity_carcajou.csv", f)
+# convert(Matrix{Float32}, connectivity_cougar) |> f -> writedlm("connectivity_cougar.csv", f)
+# convert(Matrix{Float32}, connectivity_ours) |> f -> writedlm("connectivity_oursnoir.csv", f)
+# convert(Matrix{Float32}, connectivity_renard) |> f -> writedlm("connectivity_renard.csv", f)
+# convert(Matrix{Float32}, connectivity_ratonlaveur) |> f -> writedlm("connectivity_ratonlaveur.csv", f)
+# convert(Matrix{Float32}, resistance_carcajou) |> f -> writedlm("resistance_carcajou.csv", f)
+# convert(Matrix{Float32}, resistance_cougar) |> f -> writedlm("resistance_cougar.csv", f)
+# convert(Matrix{Float32}, resistance_ours) |> f -> writedlm("resistance_oursnoir.csv", f)
+# convert(Matrix{Float32}, resistance_coyote) |> f -> writedlm("resistance_coyote.csv", f)
+# convert(Matrix{Float32}, resistance_renard) |> f -> writedlm("resistance_renard.csv", f)
+# convert(Matrix{Float32}, resistance_ratonlaveur) |> f -> writedlm("resistance_ratonlaveur.csv", f)
+# convert(Matrix{Float32}, Origin) |> f -> writedlm("Origin.csv", f)
 
 
 #create Training dataset
